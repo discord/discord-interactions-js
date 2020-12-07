@@ -15,7 +15,7 @@ Use the `InteractionType` and `InteractionResponseType` enums to figure out how 
 
 Use `verifyKey` to check a request signature (requires installation of `noble-ed25519` package):
 
-```
+```js
  const signature = req.get('X-Signature-Ed25519');
  const timestamp = req.get('X-Signature-Timestamp');
  const isValidRequest = await verifyKey(req.rawBody, signature, timestamp, 'MY_CLIENT_PUBLIC_KEY');
