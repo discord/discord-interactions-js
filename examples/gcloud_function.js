@@ -5,7 +5,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CLIENT_PUBLIC_KEY = process.env.CLIENT_PUBLIC_KEY;
 
-module.exports.dinoInteraction = async (req, res) => {
+module.exports.myInteraction = async (req, res) => {
   // Verify the request
   const signature = req.get('X-Signature-Ed25519');
   const timestamp = req.get('X-Signature-Timestamp');
