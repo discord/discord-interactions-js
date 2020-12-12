@@ -1,15 +1,43 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction, RequestParamHandler } from 'express';
+import { verify as edVerify } from 'noble-ed25519';
 
+/**
+ * The type of interaction this request is.
+ */
 const InteractionType: { [interactionType: string]: number } = Object.freeze({
+  /**
+   * A ping.
+   */
   PING: 1,
+  /**
+   * A command invocation.
+   */
   COMMAND: 2,
 });
 
+/**
+ * The type of response that is being sent.
+ */
 const InteractionResponseType: { [interactionType: string]: number } = Object.freeze({
+  /**
+   * Acknowledge a `PING`.
+   */
   PONG: 1,
+  /**
+   * Acknowledge a command without sending a message.
+   */
   ACKNOWLEDGE: 2,
+  /**
+   * Respond with a message.
+   */
   CHANNEL_MESSAGE: 3,
+  /**
+   * Respond with a message, showing the user's input.
+   */
   CHANNEL_MESSAGE_WITH_SOURCE: 4,
+  /**
+   * Acknowledge a command without sending a message, showing the user's input.
+   */
   ACKNOWLEDGE_WITH_SOURCE: 5,
 });
 
@@ -17,17 +45,31 @@ const InteractionResponseFlags: { [flagName: string]: number } = Object.freeze({
   EPHEMERAL: 1 << 6,
 });
 
+/**
+ * Validates a payload from Discord against its signature and key.
+ *
+ * @param rawBody - The raw payload data
+ * @param signature - The signature from the `X-Signature-Ed25519` header
+ * @param timestamp - The timestamp from the `X-Signature-Timestamp` header
+ * @param clientPublicKey - The public key from the Discord developer dashboard
+ * @returns Whether or not validation was successful
+ */
 async function verifyKey(
   rawBody: Buffer,
   signature: string,
   timestamp: string,
   clientPublicKey: string,
 ): Promise<boolean> {
-  const ed = require('noble-ed25519');
-  return await ed.verify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
+  return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
 }
 
-function verifyKeyMiddleware(clientPublicKey: string) {
+/**
+ * Creates a middleware function for use in Express-compatible web servers.
+ *
+ * @param clientPublicKey - The public key from the Discord developer dashboard
+ * @returns The middleware function
+ */
+function verifyKeyMiddleware(clientPublicKey: string): RequestParamHandler {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
@@ -61,7 +103,7 @@ function verifyKeyMiddleware(clientPublicKey: string) {
   };
 }
 
-module.exports = {
+export {
   InteractionType,
   InteractionResponseType,
   InteractionResponseFlags,
