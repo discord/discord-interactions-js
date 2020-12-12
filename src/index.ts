@@ -1,7 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
 import { Context, Next } from 'koa';
-import * as rawBody from 'raw-body';
 
 /**
  * The type of interaction this request is.
@@ -123,18 +122,19 @@ function verifyKeyKoaMiddleware(clientPublicKey: string) {
     throw new Error('You must specify a Discord client public key');
   }
 
-  return async function* (ctx: Context, next: Next) {
+  return async function (ctx: Context, next: Next) {
     const timestamp = ctx.get('X-Signature-Timestamp') || '';
     const signature = ctx.get('X-Signature-Ed25519') || '';
 
-    const rawRequestBody: Buffer = yield await rawBody(ctx.req);
-    if (!(await verifyKey(rawRequestBody, signature, timestamp, clientPublicKey))) {
+    const { rawBody } = ctx.request;
+
+    if (!(await verifyKey(Buffer.from(rawBody), signature, timestamp, clientPublicKey))) {
       ctx.status = 401;
       ctx.body = 'Invalid signature';
       return;
     }
 
-    const body = JSON.parse(rawRequestBody.toString('utf8')) || {};
+    const body = JSON.parse(rawBody) || {};
 
     if (body.type === InteractionType.PING) {
       ctx.set('Content-Type', 'application/json');
@@ -144,7 +144,7 @@ function verifyKeyKoaMiddleware(clientPublicKey: string) {
       return;
     }
 
-    next();
+    await next();
   };
 }
 

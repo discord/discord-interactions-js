@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/koa": "^2.11.6",
+    "@types/koa-bodyparser": "^4.3.0",
     "@types/node": "^14.14.10",
     "express": "^4.17.1",
     "prettier": "^2.2.1",
