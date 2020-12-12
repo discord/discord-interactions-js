@@ -88,7 +88,7 @@ function verifyKeyMiddleware(
     req.on('end', async function () {
       const rawBody = Buffer.concat(chunks);
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
-        res.statusCode = 403;
+        res.statusCode = 401;
         res.end('Invalid signature');
         return;
       }
