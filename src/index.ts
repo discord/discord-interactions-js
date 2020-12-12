@@ -129,7 +129,7 @@ function verifyKeyKoaMiddleware(clientPublicKey: string) {
 
     const rawRequestBody: Buffer = yield await rawBody(ctx.req);
     if (!(await verifyKey(rawRequestBody, signature, timestamp, clientPublicKey))) {
-      ctx.statusCode = 401;
+      ctx.status = 401;
       ctx.body = 'Invalid signature';
       return;
     }
