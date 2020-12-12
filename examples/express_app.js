@@ -1,9 +1,9 @@
 const express = require('express');
-const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('../dist');
+const { InteractionType, InteractionResponseType, verifyKeyExpressMiddleware } = require('../dist');
 
 const app = express();
 
-app.post('/interactions', verifyKeyMiddleware(process.env.CLIENT_PUBLIC_KEY), (req, res) => {
+app.post('/interactions', verifyKeyExpressMiddleware(process.env.CLIENT_PUBLIC_KEY), (req, res) => {
   const interaction = req.body;
   if (interaction.type === InteractionType.COMMAND) {
     res.send({
