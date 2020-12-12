@@ -5,8 +5,10 @@ const { InteractionType, InteractionResponseType, verifyKeyKoaMiddleware } = req
 const app = new Koa();
 
 app.use(bodyParser());
+app.use(verifyKeyKoaMiddleware(process.env.CLIENT_PUBLIC_KEY));
+app.use((ctx) => {
+  if (ctx.request.path !== '/interactions') return;
 
-app.use('/interactions', verifyKeyKoaMiddleware(process.env.CLIENT_PUBLIC_KEY), (ctx) => {
   const interaction = ctx.request.body;
   if (interaction.type === InteractionType.COMMAND) {
     ctx.body = {
