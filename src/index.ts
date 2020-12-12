@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
+import { Context, Next } from 'koa';
 
 /**
  * The type of interaction this request is.
@@ -71,7 +72,7 @@ type NextFunction = (err?: Error) => void;
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyMiddleware(
+function verifyKeyExpressMiddleware(
   clientPublicKey: string,
 ): (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void {
   if (!clientPublicKey) {
@@ -110,4 +111,52 @@ function verifyKeyMiddleware(
   };
 }
 
-export { InteractionType, InteractionResponseType, InteractionResponseFlags, verifyKey, verifyKeyMiddleware };
+/**
+ * Creates a middleware function for use in Koa-compatible web servers.
+ *
+ * @param clientPublicKey - The public key from the Discord developer dashboard
+ * @returns The middleware function
+ */
+function verifyKeyKoaMiddleware(clientPublicKey: string): (ctx: Context, next: Next) => void {
+  if (!clientPublicKey) {
+    throw new Error('You must specify a Discord client public key');
+  }
+  return async function (ctx: Context, next: Next) {
+    const timestamp = ctx.get('X-Signature-Timestamp') || '';
+    const signature = ctx.get('X-Signature-Ed25519') || '';
+
+    const chunks: Array<Buffer> = [];
+    ctx.req.on('data', function (chunk) {
+      chunks.push(chunk);
+    });
+    ctx.req.on('end', async function () {
+      const rawBody = Buffer.concat(chunks);
+      if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
+        ctx.statusCode = 401;
+        ctx.body = 'Invalid signature';
+        return;
+      }
+
+      const body = JSON.parse(rawBody.toString('utf-8')) || {};
+
+      if (body.type === InteractionType.PING) {
+        ctx.set('Content-Type', 'application/json');
+        ctx.body = {
+          type: InteractionResponseType.PONG,
+        };
+        return;
+      }
+
+      next();
+    });
+  };
+}
+
+export {
+  InteractionType,
+  InteractionResponseType,
+  InteractionResponseFlags,
+  verifyKey,
+  verifyKeyExpressMiddleware,
+  verifyKeyKoaMiddleware,
+};
