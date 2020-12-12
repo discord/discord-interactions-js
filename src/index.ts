@@ -71,7 +71,9 @@ type NextFunction = (err?: Error) => void;
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyMiddleware(clientPublicKey: string): (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void {
+function verifyKeyMiddleware(
+  clientPublicKey: string,
+): (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
@@ -96,11 +98,9 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: IncomingMessage, re
       if (body.type === InteractionType.PING) {
         res.setHeader('Content-Type', 'application/json');
         res.end(
-          JSON.stringify(
-            {
-              type: InteractionResponseType.PONG,
-            }
-          )
+          JSON.stringify({
+            type: InteractionResponseType.PONG,
+          }),
         );
         return;
       }
@@ -110,10 +110,4 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: IncomingMessage, re
   };
 }
 
-export {
-  InteractionType,
-  InteractionResponseType,
-  InteractionResponseFlags,
-  verifyKey,
-  verifyKeyMiddleware,
-};
+export { InteractionType, InteractionResponseType, InteractionResponseFlags, verifyKey, verifyKeyMiddleware };
