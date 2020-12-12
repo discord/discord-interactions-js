@@ -26,10 +26,10 @@ Use `verifyKey` to check a request signature (requires installation of `noble-ed
 
 Note that `req.rawBody` must be populated by a middleware (it is also set by some cloud function providers).
 
-If you're using an express-like API, you can simplify things by using the `verifyKeyMiddleware`.  For example:
+If you're using an express-like API, you can simplify things by using the `verifyKeyExpressMiddleware`. For example:
 
 ```js
-app.post('/interactions', verifyKeyMiddleware('MY_CLIENT_PUBLIC_KEY'), (req, res) => {
+app.post('/interactions', verifyKeyExpressMiddleware('MY_CLIENT_PUBLIC_KEY'), (req, res) => {
   const message = req.body;
   if (message.type === InteractionType.COMMAND) {
     res.send({
@@ -43,6 +43,24 @@ app.post('/interactions', verifyKeyMiddleware('MY_CLIENT_PUBLIC_KEY'), (req, res
 ```
 
 Make sure to include this middleware before other middlewares like body-parser.
+
+If you're using a koa-like API, you can also simplify things by using the `verifyKeyKoaMiddleware`. For example:
+
+```js
+app.post('/interactions', verifyKeyKoaMiddleware('MY_CLIENT_PUBLIC_KEY'), (ctx) => {
+  const message = ctx.request.body;
+  if (message.type === InteractionType.COMMAND) {
+    ctx.body = {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'Hello world',
+      },
+    };
+  }
+});
+```
+
+Make sure to include this middleware before other middlewares like koa-bodyparser.
 
 ## Exports
 
