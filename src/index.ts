@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
 import { Context, Next } from 'koa';
+import * as rawBody from 'raw-body';
 
 /**
  * The type of interaction this request is.
@@ -117,38 +118,33 @@ function verifyKeyExpressMiddleware(
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyKoaMiddleware(clientPublicKey: string): (ctx: Context, next: Next) => void {
+function verifyKeyKoaMiddleware(clientPublicKey: string) {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
-  return async function (ctx: Context, next: Next) {
+
+  return async function* (ctx: Context, next: Next) {
     const timestamp = ctx.get('X-Signature-Timestamp') || '';
     const signature = ctx.get('X-Signature-Ed25519') || '';
 
-    const chunks: Array<Buffer> = [];
-    ctx.req.on('data', function (chunk) {
-      chunks.push(chunk);
-    });
-    ctx.req.on('end', async function () {
-      const rawBody = Buffer.concat(chunks);
-      if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
-        ctx.statusCode = 401;
-        ctx.body = 'Invalid signature';
-        return;
-      }
+    const rawRequestBody: Buffer = yield await rawBody(ctx.req);
+    if (!(await verifyKey(rawRequestBody, signature, timestamp, clientPublicKey))) {
+      ctx.statusCode = 401;
+      ctx.body = 'Invalid signature';
+      return;
+    }
 
-      const body = JSON.parse(rawBody.toString('utf-8')) || {};
+    const body = JSON.parse(rawRequestBody.toString('utf8')) || {};
 
-      if (body.type === InteractionType.PING) {
-        ctx.set('Content-Type', 'application/json');
-        ctx.body = {
-          type: InteractionResponseType.PONG,
-        };
-        return;
-      }
+    if (body.type === InteractionType.PING) {
+      ctx.set('Content-Type', 'application/json');
+      ctx.body = {
+        type: InteractionResponseType.PONG,
+      };
+      return;
+    }
 
-      next();
-    });
+    next();
   };
 }
 
