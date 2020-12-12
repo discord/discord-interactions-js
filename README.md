@@ -82,7 +82,7 @@ An enum of flags you can set on your response data.
 
 Verify a signed payload POSTed to your webhook endpoint.
 
-### verifyKeyKoaMiddleware(clientPublicKey: string)
+### verifyKeyExpressMiddleware(clientPublicKey: string)
 
 Express-style middleware that will verify request signatures (make sure you include this before any other middleware that modifies the request body).
 
