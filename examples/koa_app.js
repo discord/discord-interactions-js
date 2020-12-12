@@ -9,12 +9,12 @@ app.use(bodyParser());
 app.use('/interactions', verifyKeyKoaMiddleware(process.env.CLIENT_PUBLIC_KEY), (ctx) => {
   const interaction = ctx.request.body;
   if (interaction.type === InteractionType.COMMAND) {
-    res.send({
+    ctx.body = {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         content: 'Hello world',
       },
-    });
+    };
   }
 });
 
