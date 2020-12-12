@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction, RequestParamHandler } from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
 
 /**
@@ -63,19 +63,21 @@ async function verifyKey(
   return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
 }
 
+type NextFunction = (err?: Error) => void;
+
 /**
  * Creates a middleware function for use in Express-compatible web servers.
  *
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyMiddleware(clientPublicKey: string): RequestParamHandler {
+function verifyKeyMiddleware(clientPublicKey: string): (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
-  return async function (req: Request, res: Response, next: NextFunction) {
-    const timestamp = req.get('X-Signature-Timestamp') || '';
-    const signature = req.get('X-Signature-Ed25519') || '';
+  return async function (req: IncomingMessage, res: ServerResponse, next: NextFunction) {
+    const timestamp = (req.headers['X-Signature-Timestamp'] || '') as string;
+    const signature = (req.headers['X-Signature-Ed25519'] || '') as string;
 
     const chunks: Array<Buffer> = [];
     req.on('data', function (chunk) {
@@ -84,17 +86,22 @@ function verifyKeyMiddleware(clientPublicKey: string): RequestParamHandler {
     req.on('end', async function () {
       const rawBody = Buffer.concat(chunks);
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
-        res.status(403).end('Invalid signature');
+        res.statusCode = 403;
+        res.end('Invalid signature');
         return;
       }
-      req.body = JSON.parse(rawBody.toString('utf-8')) || {};
 
-      if (req.body.type === InteractionType.PING) {
-        res
-          .json({
-            type: InteractionResponseType.PONG,
-          })
-          .end();
+      const body = JSON.parse(rawBody.toString('utf-8')) || {};
+
+      if (body.type === InteractionType.PING) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(
+          JSON.stringify(
+            {
+              type: InteractionResponseType.PONG,
+            }
+          )
+        );
         return;
       }
 
