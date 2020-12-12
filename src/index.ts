@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
 
 /**
