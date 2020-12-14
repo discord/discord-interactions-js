@@ -60,7 +60,16 @@ async function verifyKey(
   timestamp: string,
   clientPublicKey: string,
 ): Promise<boolean> {
-  return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
+  try {
+    return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
+  } catch (e) {
+    // In case of failure, assume verification failure and return false.
+    //
+    // The Point#multiply error from noble-ed25519 comes from a bad signature which cannot be parsed correctly
+    // by the library. It's just a poor error handling case on the library's end which causes a vague error.
+    // - LC
+    return false;
+  }
 }
 
 type NextFunction = (err?: Error) => void;
