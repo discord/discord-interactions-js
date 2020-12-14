@@ -4,46 +4,46 @@ import type { Request, Response, NextFunction } from 'express';
 /**
  * The type of interaction this request is.
  */
-const InteractionType: { [interactionType: string]: number } = Object.freeze({
+enum InteractionType {
   /**
    * A ping.
    */
-  PING: 1,
+  PING = 1,
   /**
    * A command invocation.
    */
-  COMMAND: 2,
-});
+  COMMAND = 2,
+}
 
 /**
  * The type of response that is being sent.
  */
-const InteractionResponseType: { [interactionType: string]: number } = Object.freeze({
+enum InteractionResponseType {
   /**
    * Acknowledge a `PING`.
    */
-  PONG: 1,
+  PONG = 1,
   /**
    * Acknowledge a command without sending a message.
    */
-  ACKNOWLEDGE: 2,
+  ACKNOWLEDGE = 2,
   /**
    * Respond with a message.
    */
-  CHANNEL_MESSAGE: 3,
+  CHANNEL_MESSAGE = 3,
   /**
    * Respond with a message, showing the user's input.
    */
-  CHANNEL_MESSAGE_WITH_SOURCE: 4,
+  CHANNEL_MESSAGE_WITH_SOURCE = 4,
   /**
    * Acknowledge a command without sending a message, showing the user's input.
    */
-  ACKNOWLEDGE_WITH_SOURCE: 5,
-});
+  ACKNOWLEDGE_WITH_SOURCE = 5,
+}
 
-const InteractionResponseFlags: { [flagName: string]: number } = Object.freeze({
-  EPHEMERAL: 1 << 6,
-});
+enum InteractionResponseFlags {
+  EPHEMERAL = 1 << 6,
+}
 
 /**
  * Validates a payload from Discord against its signature and key.
