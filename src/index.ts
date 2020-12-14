@@ -87,21 +87,21 @@ function verifyKeyMiddleware(
     throw new Error('You must specify a Discord client public key');
   }
   return async function (req: IncomingMessage, res: ServerResponse, next: NextFunction) {
-    const timestamp = (req.headers['x-signature-timestamp'] || '') as string;
-    const signature = (req.headers['x-signature-ed25519'] || '') as string;
+    const timestamp = req.headers['x-signature-timestamp'] as string;
+    const signature = req.headers['x-signature-ed25519'] as string;
+
+    // header sanity check
+    if (!timestamp || !signature) {
+      res.statusCode = 401;
+      res.end('Invalid headers');
+      return;
+    }
 
     const chunks: Array<Buffer> = [];
     req.on('data', function (chunk) {
       chunks.push(chunk);
     });
     req.on('end', async function () {
-      // header sanity check
-      if (!timestamp || !signature) {
-        res.statusCode = 401;
-        res.end('Invalid headers');
-        return;
-      }
-
       const rawBody = Buffer.concat(chunks);
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
         res.statusCode = 401;
