@@ -1,6 +1,6 @@
 {
   "name": "discord-interactions",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Helpers for discord interactions",
   "main": "dist/index.js",
   "license": "MIT",
@@ -19,8 +19,7 @@
     "lint": "tslint -p tsconfig.json"
   },
   "dependencies": {
-    "noble-ed25519": "^1.0.2",
-    "raw-body": "^2.4.1"
+    "noble-ed25519": "^1.0.2"
   },
   "devDependencies": {
     "@types/koa": "^2.11.6",

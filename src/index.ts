@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
-import { Context, Next } from 'koa';
+import type { Context, Next } from 'koa';
 
 /**
  * The type of interaction this request is.
