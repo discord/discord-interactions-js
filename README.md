@@ -42,7 +42,7 @@ app.post('/interactions', verifyKeyMiddleware('MY_CLIENT_PUBLIC_KEY'), (req, res
 });
 ```
 
-Make sure to include this middleware before other middlewares like body-parser.
+Make sure that you do not use other middlewares like `body-parser`, which tamper with the request body, for interaction routes.
 
 ## Exports
 

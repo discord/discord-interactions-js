@@ -4,46 +4,46 @@ import { verify as edVerify } from 'noble-ed25519';
 /**
  * The type of interaction this request is.
  */
-const InteractionType: { [interactionType: string]: number } = Object.freeze({
+enum InteractionType {
   /**
    * A ping.
    */
-  PING: 1,
+  PING = 1,
   /**
    * A command invocation.
    */
-  COMMAND: 2,
-});
+  COMMAND = 2,
+}
 
 /**
  * The type of response that is being sent.
  */
-const InteractionResponseType: { [interactionType: string]: number } = Object.freeze({
+enum InteractionResponseType {
   /**
    * Acknowledge a `PING`.
    */
-  PONG: 1,
+  PONG = 1,
   /**
    * Acknowledge a command without sending a message.
    */
-  ACKNOWLEDGE: 2,
+  ACKNOWLEDGE = 2,
   /**
    * Respond with a message.
    */
-  CHANNEL_MESSAGE: 3,
+  CHANNEL_MESSAGE = 3,
   /**
    * Respond with a message, showing the user's input.
    */
-  CHANNEL_MESSAGE_WITH_SOURCE: 4,
+  CHANNEL_MESSAGE_WITH_SOURCE = 4,
   /**
    * Acknowledge a command without sending a message, showing the user's input.
    */
-  ACKNOWLEDGE_WITH_SOURCE: 5,
-});
+  ACKNOWLEDGE_WITH_SOURCE = 5,
+}
 
-const InteractionResponseFlags: { [flagName: string]: number } = Object.freeze({
-  EPHEMERAL: 1 << 6,
-});
+enum InteractionResponseFlags {
+  EPHEMERAL = 1 << 6,
+}
 
 /**
  * Validates a payload from Discord against its signature and key.
@@ -97,12 +97,7 @@ function verifyKeyMiddleware(
       return;
     }
 
-    const chunks: Array<Buffer> = [];
-    req.on('data', function (chunk) {
-      chunks.push(chunk);
-    });
-    req.on('end', async function () {
-      const rawBody = Buffer.concat(chunks);
+    async function onBodyComplete(rawBody: Buffer) {
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
         res.statusCode = 401;
         res.end('Invalid signature');
@@ -121,8 +116,34 @@ function verifyKeyMiddleware(
         return;
       }
 
+      req.body = body;
       next();
-    });
+    }
+
+    if (req.body) {
+      if (Buffer.isBuffer(req.body)) {
+        onBodyComplete(req.body);
+      } else if (typeof req.body === 'string') {
+        onBodyComplete(Buffer.from(req.body, 'utf-8'));
+      } else {
+        console.warn(
+          '[discord-interactions]: req.body was tampered with, probably by some other middleware. We recommend disabling middleware for interaction routes so that req.body is a raw buffer.',
+        );
+        // Attempt to reconstruct the raw buffer. This works but is risky
+        // because it depends on JSON.stringify matching the Discord backend's
+        // JSON serialization.
+        onBodyComplete(Buffer.from(JSON.stringify(req.body), 'utf-8'));
+      }
+    } else {
+      const chunks: Array<Buffer> = [];
+      req.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+      req.on('end', () => {
+        const rawBody = Buffer.concat(chunks);
+        onBodyComplete(rawBody);
+      });
+    }
   };
 }
 
