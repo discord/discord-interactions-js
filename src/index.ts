@@ -1,5 +1,5 @@
-import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * The type of interaction this request is.
@@ -60,19 +60,8 @@ async function verifyKey(
   timestamp: string,
   clientPublicKey: string,
 ): Promise<boolean> {
-  try {
-    return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
-  } catch (e) {
-    // In case of failure, assume verification failure and return false.
-    //
-    // The Point#multiply error from noble-ed25519 comes from a bad signature which cannot be parsed correctly
-    // by the library. It's just a poor error handling case on the library's end which causes a vague error.
-    // - LC
-    return false;
-  }
+  return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
 }
-
-type NextFunction = (err?: Error) => void;
 
 /**
  * Creates a middleware function for use in Express-compatible web servers.
@@ -80,22 +69,14 @@ type NextFunction = (err?: Error) => void;
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyMiddleware(
-  clientPublicKey: string,
-): (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void {
+function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Response, next: NextFunction) => void {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
-  return async function (req: IncomingMessage, res: ServerResponse, next: NextFunction) {
-    const timestamp = req.headers['x-signature-timestamp'] as string;
-    const signature = req.headers['x-signature-ed25519'] as string;
 
-    // header sanity check
-    if (!timestamp || !signature) {
-      res.statusCode = 401;
-      res.end('Invalid headers');
-      return;
-    }
+  return async function (req: Request, res: Response, next: NextFunction) {
+    const timestamp = (req.header('X-Signature-Timestamp') || '') as string;
+    const signature = (req.header('X-Signature-Ed25519') || '') as string;
 
     async function onBodyComplete(rawBody: Buffer) {
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
