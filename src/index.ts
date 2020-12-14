@@ -88,7 +88,10 @@ function valueToUint8Array(value: Uint8Array | ArrayBuffer | Buffer | string, fo
   if (value instanceof ArrayBuffer) {
     return new Uint8Array(value);
   }
-  return value;
+  if (value instanceof Uint8Array) {
+    return value;
+  }
+  throw new Error('Unrecognized value type, must be one of: string, Buffer, ArrayBuffer, Uint8Array');
 }
 
 /**
