@@ -73,16 +73,12 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
+
   return async function (req: Request, res: Response, next: NextFunction) {
     const timestamp = (req.header('X-Signature-Timestamp') || '') as string;
     const signature = (req.header('X-Signature-Ed25519') || '') as string;
 
-    const chunks: Array<Buffer> = [];
-    req.on('data', function (chunk) {
-      chunks.push(chunk);
-    });
-    req.on('end', async function () {
-      const rawBody = Buffer.concat(chunks);
+    async function onBodyComplete(rawBody: Buffer) {
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
         res.statusCode = 401;
         res.end('Invalid signature');
@@ -101,8 +97,34 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
         return;
       }
 
+      req.body = body;
       next();
-    });
+    }
+
+    if (req.body) {
+      if (Buffer.isBuffer(req.body)) {
+        onBodyComplete(req.body);
+      } else if (typeof req.body === 'string') {
+        onBodyComplete(Buffer.from(req.body, 'utf-8'));
+      } else {
+        console.warn(
+          '[discord-interactions]: req.body was tampered with, probably by some other middleware. We recommend disabling middleware for interaction routes so that req.body is a raw buffer.',
+        );
+        // Attempt to reconstruct the raw buffer. This works but is risky
+        // because it depends on JSON.stringify matching the Discord backend's
+        // JSON serialization.
+        onBodyComplete(Buffer.from(JSON.stringify(req.body), 'utf-8'));
+      }
+    } else {
+      const chunks: Array<Buffer> = [];
+      req.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+      req.on('end', () => {
+        const rawBody = Buffer.concat(chunks);
+        onBodyComplete(rawBody);
+      });
+    }
   };
 }
 
