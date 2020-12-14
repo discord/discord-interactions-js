@@ -1,4 +1,7 @@
-import { verify as edVerify } from 'noble-ed25519';
+const { TextEncoder } = require('util');
+
+const nacl = require('tweetnacl');
+
 import type { Request, Response, NextFunction } from 'express';
 
 /**
@@ -41,8 +44,65 @@ enum InteractionResponseType {
   ACKNOWLEDGE_WITH_SOURCE = 5,
 }
 
+/**
+ * Flags that can be included in an Interaction Response.
+ */
 enum InteractionResponseFlags {
+  /**
+   * Show the message only to the user that performed the interaction. Message
+   * does not persist between sessions.
+   */
   EPHEMERAL = 1 << 6,
+}
+
+/**
+ * Converts different types to Uint8Array.
+ *
+ * @param value - Value to convert. Strings are parsed as hex.
+ * @returns Value in Uint8Array form.
+ */
+function valueToUint8Array(value: Uint8Array | ArrayBuffer | Buffer | string, format?: string): Uint8Array {
+  if (value == null) {
+    return new Uint8Array();
+  }
+  if (typeof value === 'string') {
+    if (format === 'hex') {
+      const matches = value.match(/.{1,2}/g);
+      if (matches == null) {
+        throw new Error('Value is not a valid hex string');
+      }
+      const hexVal = matches.map((byte: string) => parseInt(byte, 16));
+      return new Uint8Array(hexVal);
+    } else {
+      return new TextEncoder('utf-8').encode(value);
+    }
+  }
+  try {
+    if (Buffer.isBuffer(value)) {
+      const arrayBuffer = value.buffer.slice(value.byteOffset, value.byteOffset + value.length);
+      return new Uint8Array(value);
+    }
+  } catch (ex) {
+    // Runtime doesn't have Buffer
+  }
+  if (value instanceof ArrayBuffer) {
+    return new Uint8Array(value);
+  }
+  return value;
+}
+
+/**
+ * Merge two arrays.
+ *
+ * @param arr1 - First array
+ * @param arr2 - Second array
+ * @returns Concatenated arrays
+ */
+function concatUint8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
+  const merged = new Uint8Array(arr1.length + arr2.length);
+  merged.set(arr1);
+  merged.set(arr2, arr1.length);
+  return merged;
 }
 
 /**
@@ -55,12 +115,18 @@ enum InteractionResponseFlags {
  * @returns Whether or not validation was successful
  */
 async function verifyKey(
-  rawBody: Buffer,
-  signature: string,
-  timestamp: string,
-  clientPublicKey: string,
+  body: Uint8Array | ArrayBuffer | Buffer | string,
+  signature: Uint8Array | ArrayBuffer | Buffer | string,
+  timestamp: Uint8Array | ArrayBuffer | Buffer | string,
+  clientPublicKey: Uint8Array | ArrayBuffer | Buffer | string,
 ): Promise<boolean> {
-  return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
+  const timestampData = valueToUint8Array(timestamp);
+  const bodyData = valueToUint8Array(body);
+  const message = concatUint8Arrays(timestampData, bodyData);
+
+  const signatureData = valueToUint8Array(signature, 'hex');
+  const publicKeyData = valueToUint8Array(clientPublicKey, 'hex');
+  return await nacl.sign.detached.verify(message, signatureData, publicKeyData);
 }
 
 /**
@@ -86,7 +152,6 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
       }
 
       const body = JSON.parse(rawBody.toString('utf-8')) || {};
-
       if (body.type === InteractionType.PING) {
         res.setHeader('Content-Type', 'application/json');
         res.end(
