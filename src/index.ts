@@ -86,6 +86,13 @@ function verifyKeyMiddleware(
       chunks.push(chunk);
     });
     req.on('end', async function () {
+      // header sanity check
+      if (!timestamp || !signature) {
+        res.statusCode = 401;
+        res.end('Invalid headers');
+        return;
+      }
+
       const rawBody = Buffer.concat(chunks);
       if (!(await verifyKey(rawBody, signature, timestamp, clientPublicKey))) {
         res.statusCode = 401;
