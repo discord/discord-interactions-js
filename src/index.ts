@@ -119,19 +119,23 @@ function concatUint8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns Whether or not validation was successful
  */
-async function verifyKey(
+function verifyKey(
   body: Uint8Array | ArrayBuffer | Buffer | string,
   signature: Uint8Array | ArrayBuffer | Buffer | string,
   timestamp: Uint8Array | ArrayBuffer | Buffer | string,
   clientPublicKey: Uint8Array | ArrayBuffer | Buffer | string,
-): Promise<boolean> {
+): boolean {
   const timestampData = valueToUint8Array(timestamp);
   const bodyData = valueToUint8Array(body);
   const message = concatUint8Arrays(timestampData, bodyData);
 
   const signatureData = valueToUint8Array(signature, 'hex');
   const publicKeyData = valueToUint8Array(clientPublicKey, 'hex');
-  return await nacl.sign.detached.verify(message, signatureData, publicKeyData);
+  try {
+    return nacl.sign.detached.verify(message, signatureData, publicKeyData);
+  } catch (ex) {
+    return false;
+  }
 }
 
 /**
