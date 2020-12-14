@@ -134,6 +134,7 @@ function verifyKey(
   try {
     return nacl.sign.detached.verify(message, signatureData, publicKeyData);
   } catch (ex) {
+    console.error('[discord-interactions]: Invalid verifyKey parameters');
     return false;
   }
 }
