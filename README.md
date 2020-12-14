@@ -20,7 +20,7 @@ Use `verifyKey` to check a request signature (requires installation of `noble-ed
  const timestamp = req.get('X-Signature-Timestamp');
  const isValidRequest = await verifyKey(req.rawBody, signature, timestamp, 'MY_CLIENT_PUBLIC_KEY');
  if (!isValidRequest) {
-   return res.status(403).end('Bad request signature');
+   return res.status(401).end('Bad request signature');
  }
 ```
 
