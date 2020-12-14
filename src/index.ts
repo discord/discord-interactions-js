@@ -1,5 +1,5 @@
-import type { IncomingMessage, ServerResponse } from 'http';
 import { verify as edVerify } from 'noble-ed25519';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * The type of interaction this request is.
@@ -63,23 +63,19 @@ async function verifyKey(
   return await edVerify(signature, Buffer.concat([Buffer.from(timestamp, 'utf-8'), rawBody]), clientPublicKey);
 }
 
-type NextFunction = (err?: Error) => void;
-
 /**
  * Creates a middleware function for use in Express-compatible web servers.
  *
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyMiddleware(
-  clientPublicKey: string,
-): (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void {
+function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Response, next: NextFunction) => void {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
-  return async function (req: IncomingMessage, res: ServerResponse, next: NextFunction) {
-    const timestamp = (req.headers['X-Signature-Timestamp'] || '') as string;
-    const signature = (req.headers['X-Signature-Ed25519'] || '') as string;
+  return async function (req: Request, res: Response, next: NextFunction) {
+    const timestamp = (req.header('X-Signature-Timestamp') || '') as string;
+    const signature = (req.header('X-Signature-Ed25519') || '') as string;
 
     const chunks: Array<Buffer> = [];
     req.on('data', function (chunk) {
