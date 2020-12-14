@@ -1,8 +1,9 @@
-const { TextEncoder } = require('util');
-
 const nacl = require('tweetnacl');
 
 import type { Request, Response, NextFunction } from 'express';
+
+// Use built-in TextEncoder if available, otherwise import from node util.
+const LocalTextEncoder = typeof TextEncoder === 'undefined' ? require('util').TextEncoder : TextEncoder;
 
 /**
  * The type of interaction this request is.
@@ -75,7 +76,7 @@ function valueToUint8Array(value: Uint8Array | ArrayBuffer | Buffer | string, fo
       const hexVal = matches.map((byte: string) => parseInt(byte, 16));
       return new Uint8Array(hexVal);
     } else {
-      return new TextEncoder('utf-8').encode(value);
+      return new LocalTextEncoder('utf-8').encode(value);
     }
   }
   try {
