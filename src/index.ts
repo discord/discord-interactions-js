@@ -59,6 +59,7 @@ enum InteractionResponseFlags {
  * Converts different types to Uint8Array.
  *
  * @param value - Value to convert. Strings are parsed as hex.
+ * @param format - Format of value. Valid options: 'hex'. Defaults to utf-8.
  * @returns Value in Uint8Array form.
  */
 function valueToUint8Array(value: Uint8Array | ArrayBuffer | Buffer | string, format?: string): Uint8Array {
