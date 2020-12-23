@@ -1,0 +1,131 @@
+import express, { Request, Response } from 'express';
+import { InteractionResponseType, InteractionType, verifyKeyMiddleware } from '../index';
+import { AddressInfo } from 'net';
+import {
+  applicationCommandRequestBody, generatedInvalidKeyPair,
+  generatedValidKeyPair,
+  pingRequestBody,
+  sendExampleRequest,
+  signRequestWithKeyPair,
+} from './utils/SharedTestUtils';
+import * as http from 'http';
+import DoneCallback = jest.DoneCallback;
+
+const expressApp = express();
+
+const exampleApplicationCommandResponse = {
+  type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+  data: {
+    content: 'Hello world'
+  }
+};
+
+expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(generatedValidKeyPair.publicKey).toString('hex')), (req: Request, res: Response) => {
+  const interaction = req.body;
+  if (interaction.type === InteractionType.COMMAND) {
+    res.send(exampleApplicationCommandResponse);
+  }
+});
+
+let expressAppServer: http.Server;
+let exampleInteractionsUrl: string;
+
+beforeAll(async (done: DoneCallback) => {
+  await new Promise<void>((resolve) => {
+    expressAppServer = expressApp.listen(0);
+    resolve();
+  });
+  exampleInteractionsUrl = 'http://localhost:' + (expressAppServer.address() as AddressInfo).port + '/interactions';
+  done();
+});
+
+describe('verify key middleware', () => {
+
+  it('valid', async (done: DoneCallback) => {
+    // Sign and verify a valid request
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body)
+    expect(exampleRequestResponse.status).toBe(200);
+    done();
+  });
+
+  it('valid command', async (done: DoneCallback) => {
+    // Sign and verify a valid request
+    const signedRequest = signRequestWithKeyPair(applicationCommandRequestBody, generatedValidKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
+    expect(exampleRequestResponseBody).toStrictEqual(exampleApplicationCommandResponse);
+    done();
+  });
+
+  it('invalid key', async (done: DoneCallback) => {
+    // Sign a request with a different private key and verify with the valid public key
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedInvalidKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    expect(exampleRequestResponse.status).toBe(401);
+    done();
+  });
+
+  it('invalid body', async (done: DoneCallback) => {
+    // Sign a valid request and verify with an invalid body
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, 'example invalid body');
+    expect(exampleRequestResponse.status).toBe(401);
+    done();
+  });
+
+  it('invalid signature', async (done: DoneCallback) => {
+    // Sign a valid request and verify with an invalid signature
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': 'example invalid signature',
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    expect(exampleRequestResponse.status).toBe(401);
+    done();
+  });
+
+  it('invalid timestamp', async (done: DoneCallback) => {
+    // Sign a valid request and verify with an invalid timestamp
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': String(new Date().getTime() - 10000),
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    expect(exampleRequestResponse.status).toBe(401);
+    done();
+  });
+
+  it('missing headers', async (done: DoneCallback) => {
+    // Sign a valid request and verify with an invalid timestamp
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'content-type': 'application/json'
+    }, exampleInteractionsUrl);
+    expect(exampleRequestResponse.status).toBe(401);
+    done();
+  });
+});
+
+afterAll(() => {
+  if (expressAppServer) {
+    expressAppServer.close();
+  }
+});
