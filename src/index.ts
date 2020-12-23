@@ -125,16 +125,16 @@ function verifyKey(
   timestamp: Uint8Array | ArrayBuffer | Buffer | string,
   clientPublicKey: Uint8Array | ArrayBuffer | Buffer | string,
 ): boolean {
-  const timestampData = valueToUint8Array(timestamp);
-  const bodyData = valueToUint8Array(body);
-  const message = concatUint8Arrays(timestampData, bodyData);
-
-  const signatureData = valueToUint8Array(signature, 'hex');
-  const publicKeyData = valueToUint8Array(clientPublicKey, 'hex');
   try {
+    const timestampData = valueToUint8Array(timestamp);
+    const bodyData = valueToUint8Array(body);
+    const message = concatUint8Arrays(timestampData, bodyData);
+
+    const signatureData = valueToUint8Array(signature, 'hex');
+    const publicKeyData = valueToUint8Array(clientPublicKey, 'hex');
     return nacl.sign.detached.verify(message, signatureData, publicKeyData);
   } catch (ex) {
-    console.error('[discord-interactions]: Invalid verifyKey parameters');
+    console.error('[discord-interactions]: Invalid verifyKey parameters', ex);
     return false;
   }
 }
@@ -155,13 +155,7 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
     const signature = (req.header('X-Signature-Ed25519') || '') as string;
 
     function onBodyComplete(rawBody: Buffer) {
-      let fail = false;
-      try {
-        fail = !verifyKey(rawBody, signature, timestamp, clientPublicKey);
-      } catch (e) {
-        fail = true;
-      }
-      if (fail) {
+      if (!verifyKey(rawBody, signature, timestamp, clientPublicKey)) {
         res.statusCode = 401;
         res.end('[discord-interactions] Invalid signature');
         return;

@@ -13,12 +13,12 @@ npm install discord-interactions
 
 Use the `InteractionType` and `InteractionResponseType` enums to figure out how to respond to a webhook.
 
-Use `verifyKey` to check a request signature (requires installation of `noble-ed25519` package):
+Use `verifyKey` to check a request signature:
 
 ```js
  const signature = req.get('X-Signature-Ed25519');
  const timestamp = req.get('X-Signature-Timestamp');
- const isValidRequest = await verifyKey(req.rawBody, signature, timestamp, 'MY_CLIENT_PUBLIC_KEY');
+ const isValidRequest = verifyKey(req.rawBody, signature, timestamp, 'MY_CLIENT_PUBLIC_KEY');
  if (!isValidRequest) {
    return res.status(401).end('Bad request signature');
  }
