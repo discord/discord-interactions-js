@@ -150,11 +150,11 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
     throw new Error('You must specify a Discord client public key');
   }
 
-  return async function (req: Request, res: Response, next: NextFunction) {
+  return function (req: Request, res: Response, next: NextFunction) {
     const timestamp = (req.header('X-Signature-Timestamp') || '') as string;
     const signature = (req.header('X-Signature-Ed25519') || '') as string;
 
-    async function onBodyComplete(rawBody: Buffer) {
+    function onBodyComplete(rawBody: Buffer) {
       try {
         verifyKey(rawBody, signature, timestamp, clientPublicKey);
       } catch (e) {
