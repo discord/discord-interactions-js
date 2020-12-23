@@ -155,11 +155,15 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
     const signature = (req.header('X-Signature-Ed25519') || '') as string;
 
     function onBodyComplete(rawBody: Buffer) {
+      let fail = false;
       try {
-        verifyKey(rawBody, signature, timestamp, clientPublicKey);
+        fail = !verifyKey(rawBody, signature, timestamp, clientPublicKey);
       } catch (e) {
+        fail = true;
+      }
+      if (fail) {
         res.statusCode = 401;
-        res.end('Invalid signature');
+        res.end('[discord-interactions] Invalid signature');
         return;
       }
 
