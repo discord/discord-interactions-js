@@ -13,7 +13,7 @@ module.exports.myInteraction = async (req, res) => {
 
   // Handle the payload
   const interaction = req.body;
-  if (interaction && interaction.type === InteractionType.COMMAND) {
+  if (interaction && interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {

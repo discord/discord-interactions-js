@@ -14,9 +14,13 @@ enum InteractionType {
    */
   PING = 1,
   /**
-   * A command invocation.
+   * A command invocation (kept around for backwards compatiblity)
    */
   COMMAND = 2,
+  /**
+   * A command invocation.
+   */
+  APPLICATION_COMMAND = 2,
 }
 
 /**
