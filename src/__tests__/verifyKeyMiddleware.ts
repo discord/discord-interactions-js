@@ -1,15 +1,15 @@
 import express, { Request, Response } from 'express';
+import * as http from 'http';
+import DoneCallback = jest.DoneCallback;
 import { InteractionResponseType, InteractionType, verifyKeyMiddleware } from '../index';
 import { AddressInfo } from 'net';
 import {
-  applicationCommandRequestBody, generatedInvalidKeyPair,
-  generatedValidKeyPair,
+  applicationCommandRequestBody, invalidKeyPair,
+  validKeyPair,
   pingRequestBody,
   sendExampleRequest,
   signRequestWithKeyPair,
 } from './utils/SharedTestUtils';
-import * as http from 'http';
-import DoneCallback = jest.DoneCallback;
 
 const expressApp = express();
 
@@ -20,7 +20,7 @@ const exampleApplicationCommandResponse = {
   }
 };
 
-expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(generatedValidKeyPair.publicKey).toString('hex')), (req: Request, res: Response) => {
+expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(validKeyPair.publicKey).toString('hex')), (req: Request, res: Response) => {
   const interaction = req.body;
   if (interaction.type === InteractionType.COMMAND) {
     res.send(exampleApplicationCommandResponse);
@@ -41,21 +41,21 @@ beforeAll(async (done: DoneCallback) => {
 
 describe('verify key middleware', () => {
 
-  it('valid', async (done: DoneCallback) => {
-    // Sign and verify a valid request
-    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+  it('valid ping', async (done: DoneCallback) => {
+    // Sign and verify a valid ping request
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, validKeyPair.secretKey);
     const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
       'x-signature-ed25519': signedRequest.signature,
       'x-signature-timestamp': signedRequest.timestamp,
       'content-type': 'application/json'
-    }, signedRequest.body)
+    }, signedRequest.body);
     expect(exampleRequestResponse.status).toBe(200);
     done();
   });
 
-  it('valid command', async (done: DoneCallback) => {
-    // Sign and verify a valid request
-    const signedRequest = signRequestWithKeyPair(applicationCommandRequestBody, generatedValidKeyPair.secretKey);
+  it('valid application command', async (done: DoneCallback) => {
+    // Sign and verify a valid application command request
+    const signedRequest = signRequestWithKeyPair(applicationCommandRequestBody, validKeyPair.secretKey);
     const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
       'x-signature-ed25519': signedRequest.signature,
       'x-signature-timestamp': signedRequest.timestamp,
@@ -68,7 +68,7 @@ describe('verify key middleware', () => {
 
   it('invalid key', async (done: DoneCallback) => {
     // Sign a request with a different private key and verify with the valid public key
-    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedInvalidKeyPair.secretKey);
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, invalidKeyPair.secretKey);
     const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
       'x-signature-ed25519': signedRequest.signature,
       'x-signature-timestamp': signedRequest.timestamp,
@@ -80,7 +80,7 @@ describe('verify key middleware', () => {
 
   it('invalid body', async (done: DoneCallback) => {
     // Sign a valid request and verify with an invalid body
-    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, validKeyPair.secretKey);
     const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
       'x-signature-ed25519': signedRequest.signature,
       'x-signature-timestamp': signedRequest.timestamp,
@@ -92,7 +92,7 @@ describe('verify key middleware', () => {
 
   it('invalid signature', async (done: DoneCallback) => {
     // Sign a valid request and verify with an invalid signature
-    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, validKeyPair.secretKey);
     const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
       'x-signature-ed25519': 'example invalid signature',
       'x-signature-timestamp': signedRequest.timestamp,
@@ -104,10 +104,10 @@ describe('verify key middleware', () => {
 
   it('invalid timestamp', async (done: DoneCallback) => {
     // Sign a valid request and verify with an invalid timestamp
-    const signedRequest = signRequestWithKeyPair(pingRequestBody, generatedValidKeyPair.secretKey);
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, validKeyPair.secretKey);
     const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
       'x-signature-ed25519': signedRequest.signature,
-      'x-signature-timestamp': String(new Date().getTime() - 10000),
+      'x-signature-timestamp': String(Math.round(new Date().getTime() / 1000) - 10000),
       'content-type': 'application/json'
     }, signedRequest.body);
     expect(exampleRequestResponse.status).toBe(401);

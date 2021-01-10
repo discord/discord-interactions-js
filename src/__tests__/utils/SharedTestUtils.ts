@@ -21,9 +21,9 @@ export const applicationCommandRequestBody = JSON.stringify({
 });
 
 // Generate a "valid" keypair
-export const generatedValidKeyPair = nacl.sign.keyPair();
+export const validKeyPair = nacl.sign.keyPair();
 // Generate an "invalid" keypair
-export const generatedInvalidKeyPair = nacl.sign.keyPair();
+export const invalidKeyPair = nacl.sign.keyPair();
 
 export type SignedRequest = {
   body: string;
@@ -36,9 +36,9 @@ export type ExampleRequestResponse = {
 };
 
 export function signRequestWithKeyPair(body: string, privateKey: Uint8Array): SignedRequest {
-  const timestamp = String(new Date().getTime());
+  const timestamp = String(Math.round(new Date().getTime() / 1000));
   const signature = Buffer.from(nacl.sign.detached(
-    Uint8Array.from(Buffer.from(Buffer.concat([Buffer.from(timestamp), Buffer.from(body)]).toString('hex'), 'hex')),
+    Uint8Array.from(Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])),
     privateKey
   )).toString('hex');
   return {
