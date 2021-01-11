@@ -1,5 +1,6 @@
 discord-interactions
 ---
+[![Build Status](https://travis-ci.com/discord/discord-interactions-js.svg?branch=main)](https://travis-ci.com/discord/discord-interactions-js)
 
 Types and helper functions that may come in handy when you implement a Discord Interactions webhook.
 
