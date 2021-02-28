@@ -20,6 +20,7 @@
     "test": "jest --verbose"
   },
   "dependencies": {
+    "snowflake-util": "^1.0.1",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-const { SnowflakeUtil } = require("discord.js");
+const Snowflake = require("snowflake-util");
 
 /*
  * CUSTOM SPECIFIC ERRORS
@@ -211,8 +211,8 @@ class ApplicationCommand
 	constructor(data)
 	{
 		// if these raise no errors, they're valid Snowflakes
-		SnowflakeUtil.deconstruct(data.id);
-		SnowflakeUtil.deconstruct(data.application_id);
+		Snowflake.deconstruct(data.id);
+		Snowflake.deconstruct(data.application_id);
 
 		if ((typeof data.name) !== "string")
 			throw new TypeError("'name' must be a string.");
