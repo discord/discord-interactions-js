@@ -28,21 +28,13 @@ enum InteractionResponseType {
    */
   PONG = 1,
   /**
-   * Acknowledge a command without sending a message.
-   */
-  ACKNOWLEDGE = 2,
-  /**
-   * Respond with a message.
-   */
-  CHANNEL_MESSAGE = 3,
-  /**
    * Respond with a message, showing the user's input.
    */
   CHANNEL_MESSAGE_WITH_SOURCE = 4,
   /**
-   * Acknowledge a command without sending a message, showing the user's input.
+   * Acknowledge a command without sending a message, showing the user's input. Requires follow-up.
    */
-  ACKNOWLEDGE_WITH_SOURCE = 5,
+  DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
 }
 
 /**
