@@ -1,6 +1,6 @@
 {
   "name": "discord-interactions",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Helpers for discord interactions",
   "main": "dist/index.js",
   "license": "MIT",
