@@ -21,7 +21,7 @@ const exampleApplicationCommandResponse = {
 
 expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(validKeyPair.publicKey).toString('hex')), (req: Request, res: Response) => {
   const interaction = req.body;
-  if (interaction.type === InteractionType.COMMAND) {
+  if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send(exampleApplicationCommandResponse);
   }
 });

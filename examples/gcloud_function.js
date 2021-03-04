@@ -1,8 +1,5 @@
 const { InteractionResponseType, InteractionType, verifyKey } = require('discord-interactions');
 
-const API_ENDPOINT = process.env.API_ENDPOINT || 'https://discord.com/api/v8';
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CLIENT_PUBLIC_KEY = process.env.CLIENT_PUBLIC_KEY;
 
 module.exports.myInteraction = async (req, res) => {
@@ -11,12 +8,12 @@ module.exports.myInteraction = async (req, res) => {
   const timestamp = req.get('X-Signature-Timestamp');
   const isValidRequest = await verifyKey(req.rawBody, signature, timestamp, CLIENT_PUBLIC_KEY);
   if (!isValidRequest) {
-    return res.status(403).end('Bad request signature');
+    return res.status(401).end('Bad request signature');
   }
 
   // Handle the payload
   const interaction = req.body;
-  if (interaction && interaction.type === InteractionType.COMMAND) {
+  if (interaction && interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
