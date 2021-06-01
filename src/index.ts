@@ -17,6 +17,10 @@ enum InteractionType {
    * A command invocation.
    */
   APPLICATION_COMMAND = 2,
+  /**
+   * Usage of a component attached to a message.
+   */
+  MESSAGE_COMPONENT = 3,
 }
 
 /**
@@ -35,6 +39,14 @@ enum InteractionResponseType {
    * Acknowledge a command without sending a message, showing the user's input. Requires follow-up.
    */
   DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
+  /**
+   * Acknowledge an interaction and edit the original message that contains the component later; the user does not see a loading state.
+   */
+  DEFERRED_UPDATE_MESSAGE = 6,
+  /**
+   * Edit the message the component was attached to.
+   */
+  UPDATE_MESSAGE =	7,
 }
 
 /**
