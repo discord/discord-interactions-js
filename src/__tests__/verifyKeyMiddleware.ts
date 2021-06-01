@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import * as http from 'http';
-import { InteractionResponseType, InteractionType, verifyKeyMiddleware } from '../index';
+import { InteractionResponseType, InteractionResponseFlags, InteractionType, verifyKeyMiddleware } from '../index';
 import { AddressInfo } from 'net';
 import {
   applicationCommandRequestBody, invalidKeyPair,
-  validKeyPair,
+  validKeyPair, messageComponentRequestBody,
   pingRequestBody,
   sendExampleRequest,
   signRequestWithKeyPair,
@@ -16,6 +16,14 @@ const exampleApplicationCommandResponse = {
   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
   data: {
     content: 'Hello world'
+  }
+};
+
+const exampleMessageComponentResponse = {
+  type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+  data: {
+    content: 'Hello, you interacted with a component.',
+    flags: InteractionResponseFlags.EPHEMERAL
   }
 };
 
@@ -60,6 +68,18 @@ describe('verify key middleware', () => {
     }, signedRequest.body);
     const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
     expect(exampleRequestResponseBody).toStrictEqual(exampleApplicationCommandResponse);
+  });
+  
+  it('valid message component', async () => {
+    // Sign and verify a valid message component request
+    const signedRequest = signRequestWithKeyPair(messageComponentRequestBody, validKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
+    expect(exampleRequestResponseBody).toStrictEqual(exampleMessageComponentResponse);
   });
 
   it('invalid key', async () => {
