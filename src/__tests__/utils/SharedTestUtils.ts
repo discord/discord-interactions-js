@@ -19,6 +19,17 @@ export const applicationCommandRequestBody = JSON.stringify({
     name: 'test'
   }
 });
+// Example MESSAGE_COMPONENT request body
+export const messageComponentRequestBody = JSON.stringify({
+  id: '787053080478613555',
+  token: 'ThisIsATokenFromDiscordThatIsVeryLong',
+  type: 3,
+  version: 1,
+  data: {
+    custom_id: 'test',
+    component_type: 2
+  }
+});
 
 // Generate a "valid" keypair
 export const validKeyPair = nacl.sign.keyPair();
