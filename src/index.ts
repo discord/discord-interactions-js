@@ -18,7 +18,7 @@ enum InteractionType {
    */
   APPLICATION_COMMAND = 2,
   /**
-   * Usage of a component attached to a message.
+   * Usage of a message's component.
    */
   MESSAGE_COMPONENT = 3,
 }
@@ -46,7 +46,7 @@ enum InteractionResponseType {
   /**
    * Edit the message the component was attached to.
    */
-  UPDATE_MESSAGE =	7,
+  UPDATE_MESSAGE = 7,
 }
 
 /**
