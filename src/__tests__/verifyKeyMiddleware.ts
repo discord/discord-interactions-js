@@ -31,6 +31,8 @@ expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(validKeyPair.pu
   const interaction = req.body;
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send(exampleApplicationCommandResponse);
+  } else if (interaction.type === InteractionType.MESSAGE_COMPONENT) {
+    res.send(exampleMessageComponentResponse);
   }
 });
 
