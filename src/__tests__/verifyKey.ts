@@ -18,6 +18,12 @@ describe('verify key method', () => {
     const signedRequest = signRequestWithKeyPair(pingRequestBody, validKeyPair.secretKey);
     expect(verifyKey(signedRequest.body, signedRequest.signature, signedRequest.timestamp, validKeyPair.publicKey)).toBe(true);
   });
+  
+  it('valid message component', () => {
+    // Sign and verify a valid message component request
+    const signedRequest = signRequestWithKeyPair(pingRequestBody, validKeyPair.secretKey);
+    expect(verifyKey(signedRequest.body, signedRequest.signature, signedRequest.timestamp, validKeyPair.publicKey)).toBe(true);
+  });
 
   it('invalid key', () => {
     // Sign a request with a different private key and verify with the valid public key

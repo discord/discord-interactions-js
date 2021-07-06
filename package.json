@@ -1,9 +1,17 @@
 {
   "name": "discord-interactions",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Helpers for discord interactions",
   "main": "dist/index.js",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/discord/discord-interactions-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/discord/discord-interactions-js/issues"
+  },
+  "homepage": "https://github.com/discord/discord-interactions-js",
   "files": [
     "dist/**/*"
   ],
