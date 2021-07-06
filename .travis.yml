@@ -5,7 +5,7 @@ cache:
     - node_modules
   yarn: true
 node_js:
-  - 14
+  - 16
 install:
   - node -v
   - yarn -v
