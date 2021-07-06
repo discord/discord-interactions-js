@@ -10,17 +10,17 @@ Types and helper functions that may come in handy when you implement a Discord I
 Depending on your package manager, run the corresponding command in your command-line or terminal:
 
 **NPM**
-```
+```shell
 npm install discord-interactions
 ```
 
 **Yarn**
-```
+```shell
 yarn install discord-interactions
 ```
 
 **PNPM**
-```
+```shell
 pnpm add discord-interactions
 ```
 
