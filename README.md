@@ -16,7 +16,7 @@ npm install discord-interactions
 
 **Yarn**
 ```shell
-yarn install discord-interactions
+yarn add discord-interactions
 ```
 
 **PNPM**
