@@ -97,6 +97,18 @@ describe('verify key middleware', () => {
     const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
     expect(exampleRequestResponseBody).toStrictEqual(exampleMessageComponentResponse);
   });
+  
+  it('valid autocomplete', async () => {
+    // Sign and verify a valid autocomplete request
+    const signedRequest = signRequestWithKeyPair(autocompleteRequestBody, validKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
+    expect(exampleRequestResponseBody).toStrictEqual(exampleAutocompleteResponse);
+  });
 
   it('invalid key', async () => {
     // Sign a request with a different private key and verify with the valid public key
