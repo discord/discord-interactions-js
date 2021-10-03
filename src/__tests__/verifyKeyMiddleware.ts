@@ -27,12 +27,26 @@ const exampleMessageComponentResponse = {
   }
 };
 
+const exampleAutocompleteResponse = {
+  type: InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT,
+  data: {
+    choices: [
+      {
+        name: 'The first option',
+        value: 'first_option',
+      }
+    ]
+  }
+};
+
 expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(validKeyPair.publicKey).toString('hex')), (req: Request, res: Response) => {
   const interaction = req.body;
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send(exampleApplicationCommandResponse);
   } else if (interaction.type === InteractionType.MESSAGE_COMPONENT) {
     res.send(exampleMessageComponentResponse);
+  } else if (interaction.type === InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE) {
+    res.send(exampleAutocompleteResponse);
   }
 });
 
