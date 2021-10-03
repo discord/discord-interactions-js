@@ -3,9 +3,9 @@ import * as http from 'http';
 import { InteractionResponseType, InteractionResponseFlags, InteractionType, verifyKeyMiddleware } from '../index';
 import { AddressInfo } from 'net';
 import {
-  applicationCommandRequestBody, invalidKeyPair,
-  validKeyPair, messageComponentRequestBody,
-  pingRequestBody,
+  autocompleteRequestBody, applicationCommandRequestBody,
+  invalidKeyPair, validKeyPair,
+  messageComponentRequestBody, pingRequestBody,
   sendExampleRequest,
   signRequestWithKeyPair,
 } from './utils/SharedTestUtils';
