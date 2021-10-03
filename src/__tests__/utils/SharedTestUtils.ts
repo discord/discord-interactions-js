@@ -30,6 +30,27 @@ export const messageComponentRequestBody = JSON.stringify({
     component_type: 2
   }
 });
+// Example APPLICATION_COMMAND_AUTOCOMPLETE request body
+export const autocompleteRequestBody = JSON.stringify({
+  id: '787053080478613555',
+  token: 'ThisIsATokenFromDiscordThatIsVeryLong',
+  type: 4,
+  version: 1,
+  data: {
+    id: '787053080478613554',
+    name: 'test',
+    type: 1,
+    version: '787053080478613554',
+    options: [
+      {
+        type: 3,
+        name: 'option',
+        value: 'first_option',
+        focused: true
+      }
+    ]
+  }
+});
 
 // Generate a "valid" keypair
 export const validKeyPair = nacl.sign.keyPair();
