@@ -3,9 +3,9 @@ import * as http from 'http';
 import { InteractionResponseType, InteractionResponseFlags, InteractionType, verifyKeyMiddleware } from '../index';
 import { AddressInfo } from 'net';
 import {
-  applicationCommandRequestBody, invalidKeyPair,
-  validKeyPair, messageComponentRequestBody,
-  pingRequestBody,
+  autocompleteRequestBody, applicationCommandRequestBody,
+  invalidKeyPair, validKeyPair,
+  messageComponentRequestBody, pingRequestBody,
   sendExampleRequest,
   signRequestWithKeyPair,
 } from './utils/SharedTestUtils';
@@ -27,12 +27,26 @@ const exampleMessageComponentResponse = {
   }
 };
 
+const exampleAutocompleteResponse = {
+  type: InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT,
+  data: {
+    choices: [
+      {
+        name: 'The first option',
+        value: 'first_option',
+      }
+    ]
+  }
+};
+
 expressApp.post('/interactions', verifyKeyMiddleware(Buffer.from(validKeyPair.publicKey).toString('hex')), (req: Request, res: Response) => {
   const interaction = req.body;
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send(exampleApplicationCommandResponse);
   } else if (interaction.type === InteractionType.MESSAGE_COMPONENT) {
     res.send(exampleMessageComponentResponse);
+  } else if (interaction.type === InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE) {
+    res.send(exampleAutocompleteResponse);
   }
 });
 
@@ -82,6 +96,18 @@ describe('verify key middleware', () => {
     }, signedRequest.body);
     const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
     expect(exampleRequestResponseBody).toStrictEqual(exampleMessageComponentResponse);
+  });
+  
+  it('valid autocomplete', async () => {
+    // Sign and verify a valid autocomplete request
+    const signedRequest = signRequestWithKeyPair(autocompleteRequestBody, validKeyPair.secretKey);
+    const exampleRequestResponse = await sendExampleRequest(exampleInteractionsUrl, {
+      'x-signature-ed25519': signedRequest.signature,
+      'x-signature-timestamp': signedRequest.timestamp,
+      'content-type': 'application/json'
+    }, signedRequest.body);
+    const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
+    expect(exampleRequestResponseBody).toStrictEqual(exampleAutocompleteResponse);
   });
 
   it('invalid key', async () => {

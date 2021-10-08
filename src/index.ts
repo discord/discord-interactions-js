@@ -21,6 +21,10 @@ enum InteractionType {
    * Usage of a message's component.
    */
   MESSAGE_COMPONENT = 3,
+  /**
+   * An interaction sent when an application command option is filled out.
+   */
+  APPLICATION_COMMAND_AUTOCOMPLETE = 4,
 }
 
 /**
@@ -47,6 +51,10 @@ enum InteractionResponseType {
    * Edit the message the component was attached to.
    */
   UPDATE_MESSAGE = 7,
+  /*
+   * Callback for an app to define the results to the user.
+   */
+  APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8,
 }
 
 /**
