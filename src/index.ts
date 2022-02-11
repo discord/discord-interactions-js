@@ -1,6 +1,7 @@
 const nacl = require('tweetnacl');
 
 import type { Request, Response, NextFunction } from 'express';
+import type { Modal, TextInput } from './ModalTypes';
 
 // Use built-in TextEncoder if available, otherwise import from node util.
 const LocalTextEncoder = typeof TextEncoder === 'undefined' ? require('util').TextEncoder : TextEncoder;
@@ -25,6 +26,10 @@ enum InteractionType {
    * An interaction sent when an application command option is filled out.
    */
   APPLICATION_COMMAND_AUTOCOMPLETE = 4,
+  /**
+   * An interaction sent when a modal is submitted.
+   */
+   APPLICATION_MODAL_SUBMIT = 5,
 }
 
 /**
@@ -55,6 +60,10 @@ enum InteractionResponseType {
    * Callback for an app to define the results to the user.
    */
   APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8,
+  /*
+   * Respond with a modal.
+   */
+  APPLICATION_MODAL = 9,
 }
 
 /**
@@ -66,6 +75,95 @@ enum InteractionResponseFlags {
    * does not persist between sessions.
    */
   EPHEMERAL = 1 << 6,
+}
+
+/**
+ * Helper to build a modal.
+ */
+const ModalBuilder = {
+  /**
+   * Creates a modal.
+   *
+   * @param title - Title of the modal.
+   * @param custom_id - A developer-defined identifier for the modal (max 100 characters).
+   * @param components - An array of components that make up the modal (max 5 components).
+   * @returns A modal.
+   */
+  modal: ({ title, custom_id, components }: Modal) => {
+    return {
+      title,
+      custom_id,
+      components,
+    };
+  },
+
+  /**
+   * Components to make a modal.
+   */
+  MODAL_COMPONENTS: {
+
+    /**
+     * Creates a text input component.
+     *
+     * @param label - The label for this input.
+     * @param custom_id - A developer-defined identifier for the input (max 100 characters).
+     * @param required - Whether this input is required to be filled (default true).
+     * @param min_length - The minimum input length for a text input (min 0, max 4000).
+     * @param max_length - 	The maximum input length for a text input (min 1, max 4000).
+     * @param placeholder - Custom placeholder text if the input is empty (max 100 characters).
+     * @param value - A pre-filled value for this component, max 4000 characters.
+     * @returns A text input component.
+     */
+    textInput: ({ label, custom_id, required, min_length, max_length, placeholder, value }: TextInput) => {
+      return {
+        type: 1,
+        components: [
+          {
+            type: 4,
+            label,
+            style: 1,
+            custom_id,
+            required,
+            min_length,
+            max_length,
+            placeholder,
+            value,
+          },
+        ],
+      };
+    },
+
+    /**
+     * Creates a multi-line paragraph input component.
+     *
+     * @param label - The label for this input.
+     * @param custom_id - A developer-defined identifier for the input (max 100 characters).
+     * @param required - Whether this input is required to be filled (default true).
+     * @param min_length - The minimum input length for a text input (min 0, max 4000).
+     * @param max_length - 	The maximum input length for a text input (min 1, max 4000).
+     * @param placeholder - Custom placeholder text if the input is empty (max 100 characters).
+     * @param value - A pre-filled value for this component, max 4000 characters.
+     * @returns A multi-line paragraph input component.
+     */
+     paragraphInput: ({ label, custom_id, required, min_length, max_length, placeholder, value }: TextInput) => {
+      return {
+        type: 1,
+        components: [
+          {
+            type: 4,
+            label,
+            style: 2,
+            custom_id,
+            required,
+            min_length,
+            max_length,
+            placeholder,
+            value,
+          },
+        ],
+      };
+    },
+  }
 }
 
 /**
@@ -215,4 +313,4 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
   };
 }
 
-export { InteractionType, InteractionResponseType, InteractionResponseFlags, verifyKey, verifyKeyMiddleware };
+export { InteractionType, InteractionResponseType, InteractionResponseFlags, ModalBuilder, verifyKey, verifyKeyMiddleware };
