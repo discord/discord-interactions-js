@@ -6,7 +6,7 @@ export const pingRequestBody = JSON.stringify({
   id: '787053080478613555',
   token: 'ThisIsATokenFromDiscordThatIsVeryLong',
   type: 1,
-  version: 1
+  version: 1,
 });
 // Example APPLICATION_COMMAND request body
 export const applicationCommandRequestBody = JSON.stringify({
@@ -16,8 +16,8 @@ export const applicationCommandRequestBody = JSON.stringify({
   version: 1,
   data: {
     id: '787053080478613554',
-    name: 'test'
-  }
+    name: 'test',
+  },
 });
 // Example MESSAGE_COMPONENT request body
 export const messageComponentRequestBody = JSON.stringify({
@@ -27,8 +27,8 @@ export const messageComponentRequestBody = JSON.stringify({
   version: 1,
   data: {
     custom_id: 'test',
-    component_type: 2
-  }
+    component_type: 2,
+  },
 });
 // Example APPLICATION_COMMAND_AUTOCOMPLETE request body
 export const autocompleteRequestBody = JSON.stringify({
@@ -46,10 +46,10 @@ export const autocompleteRequestBody = JSON.stringify({
         type: 3,
         name: 'option',
         value: 'first_option',
-        focused: true
-      }
-    ]
-  }
+        focused: true,
+      },
+    ],
+  },
 });
 
 // Generate a "valid" keypair
@@ -69,25 +69,28 @@ export type ExampleRequestResponse = {
 
 export function signRequestWithKeyPair(body: string, privateKey: Uint8Array): SignedRequest {
   const timestamp = String(Math.round(new Date().getTime() / 1000));
-  const signature = Buffer.from(nacl.sign.detached(
-    Uint8Array.from(Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])),
-    privateKey
-  )).toString('hex');
+  const signature = Buffer.from(
+    nacl.sign.detached(Uint8Array.from(Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])), privateKey),
+  ).toString('hex');
   return {
     body,
     signature,
-    timestamp
+    timestamp,
   };
 }
 
-export async function sendExampleRequest(url: string, headers: { [key: string]: string }, body: string): Promise<ExampleRequestResponse> {
+export async function sendExampleRequest(
+  url: string,
+  headers: { [key: string]: string },
+  body: string,
+): Promise<ExampleRequestResponse> {
   const response = await fetch(url, {
     method: 'POST',
     headers,
-    body
+    body,
   });
   return {
     status: response.status,
-    body: await response.text()
+    body: await response.text(),
   };
 }
