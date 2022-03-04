@@ -1,5 +1,5 @@
 const express = require('express');
-const { InteractionType, InteractionResponseType, verifyKeyMiddleware, ModalBuilder: { modal, MODAL_COMPONENTS: { textInput, paragraphInput } } } = require('../dist');
+const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('../dist');
 
 const app = express();
 
@@ -12,17 +12,31 @@ app.post('/interactions', verifyKeyMiddleware(process.env.CLIENT_PUBLIC_KEY), (r
         title: 'Test',
         custom_id: 'test-modal',
         components: [
-          textInput({
-            label: 'Short Input',
-            custom_id: 'short-input',
-            placeholder: 'Short Input',
-          }),
-          paragraphInput({
-            label: 'Paragraph Input',
-            custom_id: 'paragraph-input',
-            placeholder: 'Paragraph Input',
-            required: false
-          }),
+          {
+            type: 1,
+            components: [
+              {
+                type: 4,
+                style: 1,
+                label: 'Short Input',
+                custom_id: 'short-input',
+                placeholder: 'Short Input',
+              },
+            ],
+          },
+          {
+            type: 1,
+            components: [
+              {
+                type: 4,
+                style: 1,
+                label: 'Paragraph Input',
+                custom_id: 'paragraph-input',
+                placeholder: 'Paragraph Input',
+                required: false
+              },
+            ],
+          },
         ],
       }),
     });
