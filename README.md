@@ -63,10 +63,6 @@ An enum of response types you may provide in reply to Discord's webhook.
 
 An enum of flags you can set on your response data.
 
-### ModalBuilder
-
-helper module to create modal responses.
-
 ### verifyKey(rawBody: Buffer, signature: string, timestamp: string, clientPublicKey: string): Promise<boolean>
 
 Verify a signed payload POSTed to your webhook endpoint.
