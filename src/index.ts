@@ -22,6 +22,10 @@ enum InteractionType {
    * An interaction sent when an application command option is filled out.
    */
   APPLICATION_COMMAND_AUTOCOMPLETE = 4,
+  /**
+   * An interaction sent when a modal is submitted.
+   */
+   APPLICATION_MODAL_SUBMIT = 5,
 }
 
 /**
@@ -52,6 +56,10 @@ enum InteractionResponseType {
    * Callback for an app to define the results to the user.
    */
   APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8,
+  /*
+   * Respond with a modal.
+   */
+  APPLICATION_MODAL = 9,
 }
 
 /**
