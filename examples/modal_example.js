@@ -8,7 +8,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.CLIENT_PUBLIC_KEY), (r
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     res.send({
       type: InteractionResponseType.APPLICATION_MODAL,
-      data: modal({
+      data: {
         title: 'Test',
         custom_id: 'test-modal',
         components: [
@@ -38,7 +38,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.CLIENT_PUBLIC_KEY), (r
             ],
           },
         ],
-      }),
+      },
     });
   }
 });
