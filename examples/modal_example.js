@@ -33,7 +33,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.CLIENT_PUBLIC_KEY), (r
                 label: 'Paragraph Input',
                 custom_id: 'paragraph-input',
                 placeholder: 'Paragraph Input',
-                required: false
+                required: false,
               },
             ],
           },
