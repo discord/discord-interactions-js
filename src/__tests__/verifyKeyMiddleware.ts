@@ -13,7 +13,8 @@ import {
   signRequestWithKeyPair,
 } from './utils/SharedTestUtils';
 
-const expressApp = require('express')();
+import express from 'express';
+const expressApp = express();
 
 const exampleApplicationCommandResponse = {
   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

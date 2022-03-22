@@ -1,5 +1,4 @@
-const nacl = require('tweetnacl');
-
+import nacl from 'tweetnacl';
 import type { Request, Response, NextFunction } from 'express';
 
 /**
@@ -25,7 +24,7 @@ enum InteractionType {
   /**
    * An interaction sent when a modal is submitted.
    */
-   APPLICATION_MODAL_SUBMIT = 5,
+  APPLICATION_MODAL_SUBMIT = 5,
 }
 
 /**
