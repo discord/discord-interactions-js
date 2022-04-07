@@ -2,22 +2,27 @@
  * The type of component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
  */
-enum ComponentType {
+enum MessageComponentTypes {
   ACTION_ROW = 1,
   BUTTON = 2,
-  SELECT_MENU = 3,
-  TEXT_INPUT = 4,
+  STRING_SELECT = 3,
+  INPUT_TEXT = 4,
 }
 
-type Component = Button | ActionRow | SelectMenu | TextInput;
+type MessageComponent = Button | ActionRow | StringSelect | InputText;
 
 /**
  * Button component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
  */
 type Button = {
-  type: ComponentType.BUTTON;
-  style: ButtonStyle.PRIMARY | ButtonStyle.SECONDARY | ButtonStyle.SUCCESS | ButtonStyle.DANGER | ButtonStyle.LINK;
+  type: MessageComponentTypes.BUTTON;
+  style:
+    | ButtonStyleTypes.PRIMARY
+    | ButtonStyleTypes.SECONDARY
+    | ButtonStyleTypes.SUCCESS
+    | ButtonStyleTypes.DANGER
+    | ButtonStyleTypes.LINK;
   label: string;
   emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
   custom_id?: string;
@@ -25,7 +30,7 @@ type Button = {
   disabled?: boolean;
 };
 
-enum ButtonStyle {
+enum ButtonStyleTypes {
   PRIMARY = 1,
   SECONDARY = 2,
   SUCCESS = 3,
@@ -38,25 +43,25 @@ enum ButtonStyle {
  * @see {@link https://discord.com/developers/docs/interactions/message-components#action-rows}
  */
 type ActionRow = {
-  type: ComponentType.ACTION_ROW;
-  components: Exclude<Component, ActionRow>[];
+  type: MessageComponentTypes.ACTION_ROW;
+  components: Exclude<MessageComponent, ActionRow>[];
 };
 
 /**
  * Select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type SelectMenu = {
-  type: ComponentType.SELECT_MENU;
+type StringSelect = {
+  type: MessageComponentTypes.STRING_SELECT;
   custom_id: string;
-  options: SelectOption[];
+  options: StringSelectOption[];
   placeholder?: string;
   min_values?: number;
   max_values?: number;
   disabled?: boolean;
 };
 
-type SelectOption = {
+type StringSelectOption = {
   label: string;
   value: string;
   description?: string;
@@ -68,10 +73,10 @@ type SelectOption = {
  * Text input component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure}
  */
-type TextInput = {
-  type: ComponentType.TEXT_INPUT;
+type InputText = {
+  type: MessageComponentTypes.INPUT_TEXT;
   custom_id: string;
-  style: TextInputStyle.SHORT | TextInputStyle.PARAGRAPH;
+  style: TextStyleTypes.SHORT | TextStyleTypes.PARAGRAPH;
   label: string;
   min_length?: number;
   max_length?: number;
@@ -80,7 +85,7 @@ type TextInput = {
   placeholder?: string;
 };
 
-enum TextInputStyle {
+enum TextStyleTypes {
   SHORT = 1,
   PARAGRAPH = 2,
 }
@@ -97,4 +102,13 @@ type EmojiInfo = {
   animated?: boolean;
 };
 
-export { ComponentType, Component, Button, ButtonStyle, SelectMenu, SelectOption, TextInput, TextInputStyle };
+export {
+  MessageComponentTypes,
+  MessageComponent,
+  Button,
+  ButtonStyleTypes,
+  StringSelect,
+  StringSelectOption,
+  InputText,
+  TextStyleTypes,
+};
