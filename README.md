@@ -51,22 +51,32 @@ Make sure that you do not use other middlewares like `body-parser`, which tamper
 
 This module exports the following:
 
-### InteractionType
+### `InteractionType`
 
 An enum of interaction types that can be POSTed to your webhook endpoint.
 
-### InteractionResponseType
+### `InteractionResponseType`
 
 An enum of response types you may provide in reply to Discord's webhook.
 
-### InteractionResponseFlags
+### `InteractionResponseFlags`
 
 An enum of flags you can set on your response data.
 
-### verifyKey(rawBody: Buffer, signature: string, timestamp: string, clientPublicKey: string): Promise<boolean>
+### `MessageComponentTypes`
+
+An enum of message component types that can be used in messages and modals.
+
+### Message components
+
+Types for the different message component structures: `Button`, `ActionRow`, `StringSelect`, and `InputText`.
+
+Also includes the enums `ButtonStyleTypes` and `TextStyleTypes`, and a `StringSelectOption` type.
+
+### `verifyKey(rawBody: Buffer, signature: string, timestamp: string, clientPublicKey: string): Promise<boolean>`
 
 Verify a signed payload POSTed to your webhook endpoint.
 
-### verifyKeyMiddleware(clientPublicKey: string)
+### `verifyKeyMiddleware(clientPublicKey: string)`
 
 Express-style middleware that will verify request signatures (make sure you include this before any other middleware that modifies the request body).

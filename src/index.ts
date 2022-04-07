@@ -220,3 +220,4 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
 }
 
 export { InteractionType, InteractionResponseType, InteractionResponseFlags, verifyKey, verifyKeyMiddleware };
+export * from './components';
