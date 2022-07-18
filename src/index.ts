@@ -24,7 +24,7 @@ enum InteractionType {
   /**
    * An interaction sent when a modal is submitted.
    */
-  APPLICATION_MODAL_SUBMIT = 5,
+  MODAL_SUBMIT = 5,
 }
 
 /**
@@ -58,7 +58,7 @@ enum InteractionResponseType {
   /*
    * Respond with a modal.
    */
-  APPLICATION_MODAL = 9,
+  MODAL = 9,
 }
 
 /**
