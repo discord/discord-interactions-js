@@ -136,14 +136,14 @@ function concatUint8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
  * @returns Whether or not validation was successful
  */
 function verifyKey(
-  body: Uint8Array | ArrayBuffer | Buffer | string,
+  rawBody: Uint8Array | ArrayBuffer | Buffer | string,
   signature: Uint8Array | ArrayBuffer | Buffer | string,
   timestamp: Uint8Array | ArrayBuffer | Buffer | string,
   clientPublicKey: Uint8Array | ArrayBuffer | Buffer | string,
 ): boolean {
   try {
     const timestampData = valueToUint8Array(timestamp);
-    const bodyData = valueToUint8Array(body);
+    const bodyData = valueToUint8Array(rawBody);
     const message = concatUint8Arrays(timestampData, bodyData);
 
     const signatureData = valueToUint8Array(signature, 'hex');
