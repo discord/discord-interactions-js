@@ -7,6 +7,10 @@ enum MessageComponentTypes {
   BUTTON = 2,
   STRING_SELECT = 3,
   INPUT_TEXT = 4,
+  USER_SELECT = 5,
+  ROLE_SELECT = 6,
+  MENTIONABLE_SELECT = 7,
+  CHANNEL_SELECT = 8,
 }
 
 type MessageComponent = Button | ActionRow | StringSelect | InputText;
@@ -47,19 +51,30 @@ type ActionRow = {
   components: Exclude<MessageComponent, ActionRow>[];
 };
 
-/**
- * Select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
- */
-type StringSelect = {
-  type: MessageComponentTypes.STRING_SELECT;
+type SelectComponentType =
+  | MessageComponentTypes.STRING_SELECT
+  | MessageComponentTypes.USER_SELECT
+  | MessageComponentTypes.ROLE_SELECT
+  | MessageComponentTypes.MENTIONABLE_SELECT
+  | MessageComponentTypes.CHANNEL_SELECT;
+
+// This parent type is to simplify the individual selects while keeping descriptive generated type hints
+type SelectMenu<T extends SelectComponentType> = {
+  type: T;
   custom_id: string;
-  options: StringSelectOption[];
   placeholder?: string;
   min_values?: number;
   max_values?: number;
   disabled?: boolean;
+  options: StringSelectOption[];
+  channel_types?: ChannelTypes[];
 };
+
+/**
+ * Text select menu component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+type StringSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'channel_types'>;
 
 type StringSelectOption = {
   label: string;
@@ -68,6 +83,40 @@ type StringSelectOption = {
   emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
   default?: boolean;
 };
+
+/**
+ * User select menu component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+type UserSelect = Omit<SelectMenu<MessageComponentTypes.USER_SELECT>, 'channel_types' | 'options'>;
+
+/**
+ * Role select menu component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+type RoleSelect = Omit<SelectMenu<MessageComponentTypes.ROLE_SELECT>, 'channel_types' | 'options'>;
+
+/**
+ * Mentionable (role & user) select menu component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+type MentionableSelect = Omit<SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>, 'channel_types' | 'options'>;
+
+/**
+ * Channel select menu component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+type ChannelSelect = Omit<SelectMenu<MessageComponentTypes.CHANNEL_SELECT>, 'options'>;
+
+enum ChannelTypes {
+  DM = 1,
+  GROUP_DM = 3,
+  GUILD_TEXT = 0,
+  GUILD_VOICE = 2,
+  GUILD_CATEGORY = 4,
+  GUILD_ANNOUNCEMENT = 5,
+  GUILD_STORE = 6,
+}
 
 /**
  * Text input component
@@ -109,6 +158,10 @@ export {
   ButtonStyleTypes,
   StringSelect,
   StringSelectOption,
+  UserSelect,
+  RoleSelect,
+  MentionableSelect,
+  ChannelSelect,
   InputText,
   TextStyleTypes,
 };
