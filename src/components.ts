@@ -88,25 +88,25 @@ type StringSelectOption = {
  * User select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type UserSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'channel_types' | 'options'>;
+type UserSelect = Omit<SelectMenu<MessageComponentTypes.USER_SELECT>, 'channel_types' | 'options'>;
 
 /**
  * Role select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type RoleSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'channel_types' | 'options'>;
+type RoleSelect = Omit<SelectMenu<MessageComponentTypes.ROLE_SELECT>, 'channel_types' | 'options'>;
 
 /**
  * Mentionable (role & user) select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type MentionableSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'channel_types' | 'options'>;
+type MentionableSelect = Omit<SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>, 'channel_types' | 'options'>;
 
 /**
  * Channel select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type ChannelSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'options'>;
+type ChannelSelect = Omit<SelectMenu<MessageComponentTypes.CHANNEL_SELECT>, 'options'>;
 
 enum ChannelTypes {
   DM = 1,
