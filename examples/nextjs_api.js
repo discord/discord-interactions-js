@@ -4,7 +4,7 @@ const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = requir
 
 function runMiddleware(req, res, fn) {
   return new Promise((resolve, reject) => {
-    req.header = (name) => { return req.headers[name.toLowerCase()] };
+    req.header = (name) => req.headers[name.toLowerCase()];
     req.body = JSON.stringify(req.body);
     fn(req, res, (result) => {
       if (result instanceof Error) return reject(result);

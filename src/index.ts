@@ -97,7 +97,6 @@ function valueToUint8Array(value: Uint8Array | ArrayBuffer | Buffer | string, fo
   }
   try {
     if (Buffer.isBuffer(value)) {
-      const arrayBuffer = value.buffer.slice(value.byteOffset, value.byteOffset + value.length);
       return new Uint8Array(value);
     }
   } catch (ex) {
