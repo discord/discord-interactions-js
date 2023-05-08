@@ -2,7 +2,7 @@
  * The type of component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
  */
-enum MessageComponentTypes {
+export enum MessageComponentTypes {
   ACTION_ROW = 1,
   BUTTON = 2,
   STRING_SELECT = 3,
@@ -13,13 +13,13 @@ enum MessageComponentTypes {
   CHANNEL_SELECT = 8,
 }
 
-type MessageComponent = Button | ActionRow | StringSelect | InputText;
+export type MessageComponent = Button | ActionRow | StringSelect | InputText;
 
 /**
  * Button component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
  */
-type Button = {
+export type Button = {
   type: MessageComponentTypes.BUTTON;
   style:
     | ButtonStyleTypes.PRIMARY
@@ -34,7 +34,7 @@ type Button = {
   disabled?: boolean;
 };
 
-enum ButtonStyleTypes {
+export enum ButtonStyleTypes {
   PRIMARY = 1,
   SECONDARY = 2,
   SUCCESS = 3,
@@ -46,12 +46,12 @@ enum ButtonStyleTypes {
  * Action row component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#action-rows}
  */
-type ActionRow = {
+export type ActionRow = {
   type: MessageComponentTypes.ACTION_ROW;
   components: Exclude<MessageComponent, ActionRow>[];
 };
 
-type SelectComponentType =
+export type SelectComponentType =
   | MessageComponentTypes.STRING_SELECT
   | MessageComponentTypes.USER_SELECT
   | MessageComponentTypes.ROLE_SELECT
@@ -59,7 +59,7 @@ type SelectComponentType =
   | MessageComponentTypes.CHANNEL_SELECT;
 
 // This parent type is to simplify the individual selects while keeping descriptive generated type hints
-type SelectMenu<T extends SelectComponentType> = {
+export type SelectMenu<T extends SelectComponentType> = {
   type: T;
   custom_id: string;
   placeholder?: string;
@@ -74,9 +74,9 @@ type SelectMenu<T extends SelectComponentType> = {
  * Text select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type StringSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'channel_types'>;
+export type StringSelect = Omit<SelectMenu<MessageComponentTypes.STRING_SELECT>, 'channel_types'>;
 
-type StringSelectOption = {
+export type StringSelectOption = {
   label: string;
   value: string;
   description?: string;
@@ -88,27 +88,27 @@ type StringSelectOption = {
  * User select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type UserSelect = Omit<SelectMenu<MessageComponentTypes.USER_SELECT>, 'channel_types' | 'options'>;
+export type UserSelect = Omit<SelectMenu<MessageComponentTypes.USER_SELECT>, 'channel_types' | 'options'>;
 
 /**
  * Role select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type RoleSelect = Omit<SelectMenu<MessageComponentTypes.ROLE_SELECT>, 'channel_types' | 'options'>;
+export type RoleSelect = Omit<SelectMenu<MessageComponentTypes.ROLE_SELECT>, 'channel_types' | 'options'>;
 
 /**
  * Mentionable (role & user) select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type MentionableSelect = Omit<SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>, 'channel_types' | 'options'>;
+export type MentionableSelect = Omit<SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>, 'channel_types' | 'options'>;
 
 /**
  * Channel select menu component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-type ChannelSelect = Omit<SelectMenu<MessageComponentTypes.CHANNEL_SELECT>, 'options'>;
+export type ChannelSelect = Omit<SelectMenu<MessageComponentTypes.CHANNEL_SELECT>, 'options'>;
 
-enum ChannelTypes {
+export enum ChannelTypes {
   DM = 1,
   GROUP_DM = 3,
   GUILD_TEXT = 0,
@@ -122,7 +122,7 @@ enum ChannelTypes {
  * Text input component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure}
  */
-type InputText = {
+export type InputText = {
   type: MessageComponentTypes.INPUT_TEXT;
   custom_id: string;
   style: TextStyleTypes.SHORT | TextStyleTypes.PARAGRAPH;
@@ -134,12 +134,12 @@ type InputText = {
   placeholder?: string;
 };
 
-enum TextStyleTypes {
+export enum TextStyleTypes {
   SHORT = 1,
   PARAGRAPH = 2,
 }
 
-type EmojiInfo = {
+export type EmojiInfo = {
   name: string | undefined;
   id: string | undefined;
   // Should define the user object in future
@@ -149,19 +149,4 @@ type EmojiInfo = {
   managed?: boolean;
   available?: boolean;
   animated?: boolean;
-};
-
-export {
-  MessageComponentTypes,
-  MessageComponent,
-  Button,
-  ButtonStyleTypes,
-  StringSelect,
-  StringSelectOption,
-  UserSelect,
-  RoleSelect,
-  MentionableSelect,
-  ChannelSelect,
-  InputText,
-  TextStyleTypes,
 };
