@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from 'express';
 /**
  * The type of interaction this request is.
  */
-enum InteractionType {
+export enum InteractionType {
   /**
    * A ping.
    */
@@ -30,7 +30,7 @@ enum InteractionType {
 /**
  * The type of response that is being sent.
  */
-enum InteractionResponseType {
+export enum InteractionResponseType {
   /**
    * Acknowledge a `PING`.
    */
@@ -64,7 +64,7 @@ enum InteractionResponseType {
 /**
  * Flags that can be included in an Interaction Response.
  */
-enum InteractionResponseFlags {
+export enum InteractionResponseFlags {
   /**
    * Show the message only to the user that performed the interaction. Message
    * does not persist between sessions.
@@ -134,7 +134,7 @@ function concatUint8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns Whether or not validation was successful
  */
-function verifyKey(
+export function verifyKey(
   rawBody: Uint8Array | ArrayBuffer | Buffer | string,
   signature: Uint8Array | ArrayBuffer | Buffer | string,
   timestamp: Uint8Array | ArrayBuffer | Buffer | string,
@@ -160,7 +160,9 @@ function verifyKey(
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Response, next: NextFunction) => void {
+export function verifyKeyMiddleware(
+  clientPublicKey: string,
+): (req: Request, res: Response, next: NextFunction) => void {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
@@ -218,5 +220,4 @@ function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Respo
   };
 }
 
-export { InteractionType, InteractionResponseType, InteractionResponseFlags, verifyKey, verifyKeyMiddleware };
 export * from './components';
