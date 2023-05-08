@@ -160,7 +160,9 @@ export function verifyKey(
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns The middleware function
  */
-export function verifyKeyMiddleware(clientPublicKey: string): (req: Request, res: Response, next: NextFunction) => void {
+export function verifyKeyMiddleware(
+  clientPublicKey: string,
+): (req: Request, res: Response, next: NextFunction) => void {
   if (!clientPublicKey) {
     throw new Error('You must specify a Discord client public key');
   }
