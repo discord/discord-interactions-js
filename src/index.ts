@@ -59,6 +59,10 @@ export enum InteractionResponseType {
    * Respond with a modal.
    */
   MODAL = 9,
+  /*
+   * Respond with an Iframe Modal
+   */
+  IFRAME_MODAL = 11,
 }
 
 /**
