@@ -153,7 +153,6 @@ export function verifyKey(
     const publicKeyData = valueToUint8Array(clientPublicKey, 'hex');
     return nacl.sign.detached.verify(message, signatureData, publicKeyData);
   } catch (ex) {
-    console.error('[discord-interactions]: Invalid verifyKey parameters', ex);
     return false;
   }
 }
