@@ -48,8 +48,16 @@ const exampleAutocompleteResponse = {
 	},
 };
 
+let requestBody: unknown = undefined;
+
 expressApp.post(
 	'/interactions',
+	(req, _res, next) => {
+		if (requestBody) {
+			req.body = requestBody;
+		}
+		next();
+	},
 	verifyKeyMiddleware(Buffer.from(validKeyPair.publicKey).toString('hex')),
 	(req: Request, res: Response) => {
 		const interaction = req.body;
@@ -79,6 +87,11 @@ beforeAll(async () => {
 });
 
 describe('verify key middleware', () => {
+	afterEach(() => {
+		requestBody = undefined;
+		jest.restoreAllMocks();
+	});
+
 	it('valid ping', async () => {
 		// Sign and verify a valid ping request
 		const signedRequest = signRequestWithKeyPair(
@@ -244,6 +257,52 @@ describe('verify key middleware', () => {
 			exampleInteractionsUrl,
 		);
 		expect(exampleRequestResponse.status).toBe(401);
+	});
+
+	it('missing public key', async () => {
+		expect(() => verifyKeyMiddleware('')).toThrow(
+			'You must specify a Discord client public key',
+		);
+	});
+
+	it('handles string bodies from middleware', async () => {
+		const signedRequest = signRequestWithKeyPair(
+			pingRequestBody,
+			validKeyPair.secretKey,
+		);
+		requestBody = signedRequest.body;
+		const exampleRequestResponse = await sendExampleRequest(
+			exampleInteractionsUrl,
+			{
+				'x-signature-ed25519': signedRequest.signature,
+				'x-signature-timestamp': signedRequest.timestamp,
+				'content-type': 'application/json',
+			},
+			'',
+		);
+		expect(exampleRequestResponse.status).toBe(200);
+	});
+
+	it('warns on unknown bodies from middleware', async () => {
+		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
+			return;
+		});
+		const signedRequest = signRequestWithKeyPair(
+			pingRequestBody,
+			validKeyPair.secretKey,
+		);
+		requestBody = JSON.parse(signedRequest.body);
+		const exampleRequestResponse = await sendExampleRequest(
+			exampleInteractionsUrl,
+			{
+				'x-signature-ed25519': signedRequest.signature,
+				'x-signature-timestamp': signedRequest.timestamp,
+				'content-type': 'application/json',
+			},
+			'',
+		);
+		expect(exampleRequestResponse.status).toBe(200);
+		expect(warnSpy).toBeCalled();
 	});
 });
 
