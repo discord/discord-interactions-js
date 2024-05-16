@@ -1,6 +1,6 @@
 {
   "name": "discord-interactions",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "description": "Helpers for discord interactions",
   "main": "dist/index.js",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "url": "https://github.com/discord/discord-interactions-js.git"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=18"
   },
   "bugs": {
     "url": "https://github.com/discord/discord-interactions-js/issues"
