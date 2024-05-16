@@ -15,32 +15,43 @@ export enum MessageComponentTypes {
 
 export type MessageComponent = Button | ActionRow | StringSelect | InputText;
 
-/**
- * Button component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
- */
-export type Button = {
-  type: MessageComponentTypes.BUTTON;
-  style:
-    | ButtonStyleTypes.PRIMARY
-    | ButtonStyleTypes.SECONDARY
-    | ButtonStyleTypes.SUCCESS
-    | ButtonStyleTypes.DANGER
-    | ButtonStyleTypes.LINK;
-  label: string;
-  emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
-  custom_id?: string;
-  url?: string;
-  disabled?: boolean;
-};
-
 export enum ButtonStyleTypes {
   PRIMARY = 1,
   SECONDARY = 2,
   SUCCESS = 3,
   DANGER = 4,
   LINK = 5,
+  PREMIUM = 6,
 }
+
+type PremiumButton = {
+  disabled?: boolean;
+  type: MessageComponentTypes.BUTTON;
+  label: string;
+  sku_id: string;
+  style: ButtonStyleTypes.PREMIUM;
+};
+
+/**
+ * Button component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
+ */
+export type Button =
+  | {
+      type: MessageComponentTypes.BUTTON;
+      style:
+        | ButtonStyleTypes.PRIMARY
+        | ButtonStyleTypes.SECONDARY
+        | ButtonStyleTypes.SUCCESS
+        | ButtonStyleTypes.DANGER
+        | ButtonStyleTypes.LINK;
+      label: string;
+      emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
+      custom_id?: string;
+      url?: string;
+      disabled?: boolean;
+    }
+  | PremiumButton;
 
 /**
  * Action row component
