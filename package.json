@@ -18,7 +18,7 @@
   "files": [
     "dist/**/*"
   ],
-  "prepare": "yarn run build",
+  "prepare": "npm run build",
   "types": "dist/index.d.ts",
   "keywords": [
     "discord"
