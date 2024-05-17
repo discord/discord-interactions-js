@@ -25,7 +25,6 @@ export enum ButtonStyleTypes {
 }
 
 interface BaseButton {
-  custom_id?: string;
   disabled?: boolean;
   emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
   label: string;
@@ -38,11 +37,12 @@ interface PremiumButton extends BaseButton {
 }
 
 interface LinkButton extends BaseButton {
-  url?: string;
+  url: string;
   style: ButtonStyleTypes.LINK;
 }
 
 interface AllOtherButtons extends BaseButton {
+  custom_id: string;
   style: ButtonStyleTypes.PRIMARY | ButtonStyleTypes.SECONDARY | ButtonStyleTypes.SUCCESS | ButtonStyleTypes.DANGER;
 }
 
