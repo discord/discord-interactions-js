@@ -1,5 +1,4 @@
 import nacl from 'tweetnacl';
-import fetch from 'node-fetch';
 
 // Example PING request body
 export const pingRequestBody = JSON.stringify({
