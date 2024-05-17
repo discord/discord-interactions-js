@@ -1,0 +1,20 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
+	"files": {
+		"include": ["src/**/*.ts", "examples/*.js"]
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	}
+}
