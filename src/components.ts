@@ -41,7 +41,7 @@ interface LinkButton extends BaseButton {
   style: ButtonStyleTypes.LINK;
 }
 
-interface AllOtherButtons extends BaseButton {
+interface CustomButton extends BaseButton {
   custom_id: string;
   style: ButtonStyleTypes.PRIMARY | ButtonStyleTypes.SECONDARY | ButtonStyleTypes.SUCCESS | ButtonStyleTypes.DANGER;
 }
@@ -50,7 +50,7 @@ interface AllOtherButtons extends BaseButton {
  * Button component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
  */
-export type Button = AllOtherButtons | LinkButton | PremiumButton;
+export type Button = CustomButton | LinkButton | PremiumButton;
 
 /**
  * Action row component
