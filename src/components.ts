@@ -24,34 +24,33 @@ export enum ButtonStyleTypes {
   PREMIUM = 6,
 }
 
-type PremiumButton = {
+interface BaseButton {
+  custom_id?: string;
   disabled?: boolean;
-  type: MessageComponentTypes.BUTTON;
+  emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
   label: string;
+  type: MessageComponentTypes.BUTTON;
+}
+
+interface PremiumButton extends BaseButton {
   sku_id: string;
   style: ButtonStyleTypes.PREMIUM;
-};
+}
+
+interface LinkButton extends BaseButton {
+  url?: string;
+  style: ButtonStyleTypes.LINK;
+}
+
+interface AllOtherButtons extends BaseButton {
+  style: ButtonStyleTypes.PRIMARY | ButtonStyleTypes.SECONDARY | ButtonStyleTypes.SUCCESS | ButtonStyleTypes.DANGER;
+}
 
 /**
  * Button component
  * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
  */
-export type Button =
-  | {
-      type: MessageComponentTypes.BUTTON;
-      style:
-        | ButtonStyleTypes.PRIMARY
-        | ButtonStyleTypes.SECONDARY
-        | ButtonStyleTypes.SUCCESS
-        | ButtonStyleTypes.DANGER
-        | ButtonStyleTypes.LINK;
-      label: string;
-      emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
-      custom_id?: string;
-      url?: string;
-      disabled?: boolean;
-    }
-  | PremiumButton;
+export type Button = AllOtherButtons | LinkButton | PremiumButton;
 
 /**
  * Action row component
