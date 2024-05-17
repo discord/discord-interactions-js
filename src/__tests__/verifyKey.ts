@@ -134,4 +134,37 @@ describe('verify key method', () => {
 			),
 		).toBe(false);
 	});
+
+	it('supports array buffers', () => {
+		const signedRequest = signRequestWithKeyPair(
+			pingRequestBody,
+			validKeyPair.secretKey,
+		);
+		const encoder = new TextEncoder();
+		const bodyEncoded = encoder.encode(signedRequest.body);
+		expect(
+			verifyKey(
+				bodyEncoded.buffer,
+				signedRequest.signature,
+				signedRequest.timestamp,
+				validKeyPair.publicKey,
+			),
+		).toBe(true);
+	});
+
+	it('invalid body data type', () => {
+		const signedRequest = signRequestWithKeyPair(
+			pingRequestBody,
+			validKeyPair.secretKey,
+		);
+		const invalidBody = {} as unknown as string;
+		expect(
+			verifyKey(
+				invalidBody,
+				signedRequest.signature,
+				signedRequest.timestamp,
+				validKeyPair.publicKey,
+			),
+		).toBe(false);
+	});
 });
