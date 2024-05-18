@@ -2,7 +2,7 @@
  * Based on environment, get a reference to the Web Crypto API's SubtleCrypto interface.
  * @returns An implementation of the Web Crypto API's SubtleCrypto interface.
  */
-export function getSubtleCrypto(): SubtleCrypto {
+function getSubtleCrypto(): SubtleCrypto {
 	if (typeof window !== 'undefined' && window.crypto) {
 		return window.crypto.subtle;
 	}
@@ -12,8 +12,14 @@ export function getSubtleCrypto(): SubtleCrypto {
 	if (typeof crypto !== 'undefined') {
 		return crypto.subtle;
 	}
+	if (typeof require === 'function') {
+		const crypto = require('node:crypto');
+		return crypto.webcrypto.subtle;
+	}
 	throw new Error('No Web Crypto API implementation found');
 }
+
+export const subtleCrypto = getSubtleCrypto();
 
 /**
  * Convert a base64 encoded string to an ArrayBuffer.

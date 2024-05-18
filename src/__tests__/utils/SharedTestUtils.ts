@@ -1,5 +1,4 @@
-import { arrayBufferToBase64, getSubtleCrypto } from '../../util';
-const crypto = getSubtleCrypto();
+import { arrayBufferToBase64, subtleCrypto } from '../../util';
 
 // Example PING request body
 export const pingRequestBody = JSON.stringify({
@@ -53,7 +52,7 @@ export const autocompleteRequestBody = JSON.stringify({
 });
 
 export async function generateKeyPair() {
-	const keyPair = await crypto.generateKey(
+	const keyPair = await subtleCrypto.generateKey(
 		{
 			name: 'ed25519',
 			namedCurve: 'ed25519',
@@ -80,7 +79,7 @@ export async function signRequestWithKeyPair(
 ) {
 	const encoder = new TextEncoder();
 	const timestamp = String(Math.round(new Date().getTime() / 1000));
-	const signature = await crypto.sign(
+	const signature = await subtleCrypto.sign(
 		{
 			name: 'ed25519',
 		},

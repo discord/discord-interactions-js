@@ -1,7 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import { base64ToArrayBuffer, getSubtleCrypto } from './util';
-
-const crypto = getSubtleCrypto();
+import { base64ToArrayBuffer, subtleCrypto } from './util';
 
 /**
  * The type of interaction this request is.
@@ -97,7 +95,7 @@ export async function verifyKey(
 		const encoder = new TextEncoder();
 		const publicKey =
 			typeof clientPublicKey === 'string'
-				? await crypto.importKey(
+				? await subtleCrypto.importKey(
 						'raw',
 						base64ToArrayBuffer(clientPublicKey),
 						{
@@ -112,7 +110,7 @@ export async function verifyKey(
 			typeof rawBody === 'string'
 				? rawBody
 				: Buffer.from(rawBody).toString('utf-8');
-		const isValid = await crypto.verify(
+		const isValid = await subtleCrypto.verify(
 			{
 				name: 'ed25519',
 			},
