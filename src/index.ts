@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import { base64ToArrayBuffer, getSubtleCrypto } from './util';
 
+const crypto = getSubtleCrypto();
+
 /**
  * The type of interaction this request is.
  */
@@ -92,7 +94,6 @@ export async function verifyKey(
 	clientPublicKey: string | CryptoKey,
 ): Promise<boolean> {
 	try {
-		const crypto = getSubtleCrypto();
 		const encoder = new TextEncoder();
 		const publicKey =
 			typeof clientPublicKey === 'string'

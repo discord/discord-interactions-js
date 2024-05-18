@@ -18,8 +18,10 @@ import {
 } from './utils/SharedTestUtils';
 
 import express from 'express';
-import { arrayBufferToBase64 } from '../util';
+import { arrayBufferToBase64, getSubtleCrypto } from '../util';
+
 const expressApp = express();
+const crypto = getSubtleCrypto();
 
 const exampleApplicationCommandResponse = {
 	type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -65,7 +67,7 @@ describe('verify key middleware', () => {
 		validKeyPair = await generateKeyPair();
 		invalidKeyPair = await generateKeyPair();
 		const rawPublicKey = arrayBufferToBase64(
-			await crypto.subtle.exportKey('raw', validKeyPair.publicKey),
+			await crypto.exportKey('raw', validKeyPair.publicKey),
 		);
 
 		expressApp.post(
