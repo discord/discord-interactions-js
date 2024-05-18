@@ -9,7 +9,7 @@
     "url": "https://github.com/discord/discord-interactions-js.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.4.0"
   },
   "bugs": {
     "url": "https://github.com/discord/discord-interactions-js/issues"
