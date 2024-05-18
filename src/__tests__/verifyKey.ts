@@ -1,170 +1,167 @@
 import { verifyKey } from '../index';
 import {
-	invalidKeyPair,
+	generateKeyPair,
 	pingRequestBody,
 	signRequestWithKeyPair,
-	validKeyPair,
 } from './utils/SharedTestUtils';
 
 describe('verify key method', () => {
-	it('valid ping request', () => {
+	let validKeyPair: CryptoKeyPair;
+	let invalidKeyPair: CryptoKeyPair;
+
+	beforeAll(async () => {
+		validKeyPair = await generateKeyPair();
+		invalidKeyPair = await generateKeyPair();
+	});
+
+	it('valid ping request', async () => {
 		// Sign and verify a valid ping request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				signedRequest.body,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(true);
+		const isValid = await verifyKey(
+			signedRequest.body,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(true);
 	});
 
-	it('valid application command', () => {
+	it('valid application command', async () => {
 		// Sign and verify a valid application command request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				signedRequest.body,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(true);
+		const isValid = await verifyKey(
+			signedRequest.body,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(true);
 	});
 
-	it('valid message component', () => {
+	it('valid message component', async () => {
 		// Sign and verify a valid message component request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				signedRequest.body,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(true);
+		const isValid = await verifyKey(
+			signedRequest.body,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(true);
 	});
 
-	it('valid autocomplete', () => {
+	it('valid autocomplete', async () => {
 		// Sign and verify a valid autocomplete request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				signedRequest.body,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(true);
+		const isValid = await verifyKey(
+			signedRequest.body,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(true);
 	});
 
-	it('invalid key', () => {
+	it('invalid key', async () => {
 		// Sign a request with a different private key and verify with the valid public key
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			invalidKeyPair.secretKey,
+			invalidKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				signedRequest.body,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(false);
+		const isValid = await verifyKey(
+			signedRequest.body,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(false);
 	});
 
-	it('invalid body', () => {
+	it('invalid body', async () => {
 		// Sign a valid request and verify with an invalid body
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				'example invalid body',
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(false);
+		const isValid = await verifyKey(
+			'example invalid body',
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(false);
 	});
 
-	it('invalid signature', () => {
+	it('invalid signature', async () => {
 		// Sign a valid request and verify with an invalid signature
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				signedRequest.body,
-				'example invalid signature',
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(false);
+		const isValid = await verifyKey(
+			signedRequest.body,
+			'example invalid signature',
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(false);
 	});
 
-	it('invalid timestamp', () => {
+	it('invalid timestamp', async () => {
 		// Sign a valid request and verify with an invalid timestamp
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
-		expect(
-			verifyKey(
-				'example invalid body',
-				signedRequest.signature,
-				String(Math.round(new Date().getTime() / 1000) - 10000),
-				validKeyPair.publicKey,
-			),
-		).toBe(false);
+		const isValid = await verifyKey(
+			'example invalid body',
+			signedRequest.signature,
+			String(Math.round(new Date().getTime() / 1000) - 10000),
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(false);
 	});
 
-	it('supports array buffers', () => {
-		const signedRequest = signRequestWithKeyPair(
+	it('supports array buffers', async () => {
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const encoder = new TextEncoder();
 		const bodyEncoded = encoder.encode(signedRequest.body);
-		expect(
-			verifyKey(
-				bodyEncoded.buffer,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(true);
+		const isValid = await verifyKey(
+			bodyEncoded.buffer,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(true);
 	});
 
-	it('invalid body data type', () => {
-		const signedRequest = signRequestWithKeyPair(
+	it('invalid body data type', async () => {
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const invalidBody = {} as unknown as string;
-		expect(
-			verifyKey(
-				invalidBody,
-				signedRequest.signature,
-				signedRequest.timestamp,
-				validKeyPair.publicKey,
-			),
-		).toBe(false);
+		const isValid = await verifyKey(
+			invalidBody,
+			signedRequest.signature,
+			signedRequest.timestamp,
+			validKeyPair.publicKey,
+		);
+		expect(isValid).toBe(false);
 	});
 });

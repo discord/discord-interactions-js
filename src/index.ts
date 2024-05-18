@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import nacl from 'tweetnacl';
+import { base64ToArrayBuffer, getSubtleCrypto } from './util';
 
 /**
  * The type of interaction this request is.
@@ -77,64 +77,6 @@ export enum InteractionResponseFlags {
 }
 
 /**
- * Converts different types to Uint8Array.
- *
- * @param value - Value to convert. Strings are parsed as hex.
- * @param format - Format of value. Valid options: 'hex'. Defaults to utf-8.
- * @returns Value in Uint8Array form.
- */
-function valueToUint8Array(
-	value: Uint8Array | ArrayBuffer | Buffer | string,
-	format?: string,
-): Uint8Array {
-	if (value == null) {
-		return new Uint8Array();
-	}
-	if (typeof value === 'string') {
-		if (format === 'hex') {
-			const matches = value.match(/.{1,2}/g);
-			if (matches == null) {
-				throw new Error('Value is not a valid hex string');
-			}
-			const hexVal = matches.map((byte: string) => Number.parseInt(byte, 16));
-			return new Uint8Array(hexVal);
-		}
-
-		return new TextEncoder().encode(value);
-	}
-	try {
-		if (Buffer.isBuffer(value)) {
-			return new Uint8Array(value);
-		}
-	} catch (ex) {
-		// Runtime doesn't have Buffer
-	}
-	if (value instanceof ArrayBuffer) {
-		return new Uint8Array(value);
-	}
-	if (value instanceof Uint8Array) {
-		return value;
-	}
-	throw new Error(
-		'Unrecognized value type, must be one of: string, Buffer, ArrayBuffer, Uint8Array',
-	);
-}
-
-/**
- * Merge two arrays.
- *
- * @param arr1 - First array
- * @param arr2 - Second array
- * @returns Concatenated arrays
- */
-function concatUint8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
-	const merged = new Uint8Array(arr1.length + arr2.length);
-	merged.set(arr1);
-	merged.set(arr2, arr1.length);
-	return merged;
-}
-
-/**
  * Validates a payload from Discord against its signature and key.
  *
  * @param rawBody - The raw payload data
@@ -143,20 +85,41 @@ function concatUint8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
  * @param clientPublicKey - The public key from the Discord developer dashboard
  * @returns Whether or not validation was successful
  */
-export function verifyKey(
+export async function verifyKey(
 	rawBody: Uint8Array | ArrayBuffer | Buffer | string,
-	signature: Uint8Array | ArrayBuffer | Buffer | string,
-	timestamp: Uint8Array | ArrayBuffer | Buffer | string,
-	clientPublicKey: Uint8Array | ArrayBuffer | Buffer | string,
-): boolean {
+	signature: string,
+	timestamp: string,
+	clientPublicKey: string | CryptoKey,
+): Promise<boolean> {
 	try {
-		const timestampData = valueToUint8Array(timestamp);
-		const bodyData = valueToUint8Array(rawBody);
-		const message = concatUint8Arrays(timestampData, bodyData);
-
-		const signatureData = valueToUint8Array(signature, 'hex');
-		const publicKeyData = valueToUint8Array(clientPublicKey, 'hex');
-		return nacl.sign.detached.verify(message, signatureData, publicKeyData);
+		const crypto = getSubtleCrypto();
+		const encoder = new TextEncoder();
+		const publicKey =
+			typeof clientPublicKey === 'string'
+				? await crypto.importKey(
+						'raw',
+						base64ToArrayBuffer(clientPublicKey),
+						{
+							name: 'ed25519',
+							namedCurve: 'ed25519',
+						},
+						false,
+						['verify'],
+					)
+				: clientPublicKey;
+		const body =
+			typeof rawBody === 'string'
+				? rawBody
+				: Buffer.from(rawBody).toString('utf-8');
+		const isValid = await crypto.verify(
+			{
+				name: 'ed25519',
+			},
+			publicKey,
+			base64ToArrayBuffer(signature),
+			encoder.encode(timestamp + body),
+		);
+		return isValid;
 	} catch (ex) {
 		return false;
 	}
@@ -175,12 +138,24 @@ export function verifyKeyMiddleware(
 		throw new Error('You must specify a Discord client public key');
 	}
 
-	return (req: Request, res: Response, next: NextFunction) => {
-		const timestamp = (req.header('X-Signature-Timestamp') || '') as string;
-		const signature = (req.header('X-Signature-Ed25519') || '') as string;
+	return async (req: Request, res: Response, next: NextFunction) => {
+		const timestamp = req.header('X-Signature-Timestamp') || '';
+		const signature = req.header('X-Signature-Ed25519') || '';
 
-		function onBodyComplete(rawBody: Buffer) {
-			if (!verifyKey(rawBody, signature, timestamp, clientPublicKey)) {
+		if (!timestamp || !signature) {
+			res.statusCode = 401;
+			res.end('[discord-interactions] Invalid signature');
+			return;
+		}
+
+		async function onBodyComplete(rawBody: Buffer) {
+			const isValid = await verifyKey(
+				rawBody,
+				signature,
+				timestamp,
+				clientPublicKey,
+			);
+			if (!isValid) {
 				res.statusCode = 401;
 				res.end('[discord-interactions] Invalid signature');
 				return;
@@ -203,9 +178,9 @@ export function verifyKeyMiddleware(
 
 		if (req.body) {
 			if (Buffer.isBuffer(req.body)) {
-				onBodyComplete(req.body);
+				await onBodyComplete(req.body);
 			} else if (typeof req.body === 'string') {
-				onBodyComplete(Buffer.from(req.body, 'utf-8'));
+				await onBodyComplete(Buffer.from(req.body, 'utf-8'));
 			} else {
 				console.warn(
 					'[discord-interactions]: req.body was tampered with, probably by some other middleware. We recommend disabling middleware for interaction routes so that req.body is a raw buffer.',
@@ -213,16 +188,16 @@ export function verifyKeyMiddleware(
 				// Attempt to reconstruct the raw buffer. This works but is risky
 				// because it depends on JSON.stringify matching the Discord backend's
 				// JSON serialization.
-				onBodyComplete(Buffer.from(JSON.stringify(req.body), 'utf-8'));
+				await onBodyComplete(Buffer.from(JSON.stringify(req.body), 'utf-8'));
 			}
 		} else {
 			const chunks: Array<Buffer> = [];
 			req.on('data', (chunk) => {
 				chunks.push(chunk);
 			});
-			req.on('end', () => {
+			req.on('end', async () => {
 				const rawBody = Buffer.concat(chunks);
-				onBodyComplete(rawBody);
+				await onBodyComplete(rawBody);
 			});
 		}
 	};
