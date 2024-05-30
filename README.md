@@ -1,4 +1,5 @@
-discord-interactions
+# discord-interactions
+
 ---
 [![version](https://img.shields.io/npm/v/discord-interactions.svg)](https://www.npmjs.com/package/discord-interactions)
 [![ci](https://github.com/discord/discord-interactions-js/actions/workflows/ci.yaml/badge.svg)](https://github.com/discord/discord-interactions-js/actions/workflows/ci.yaml)
@@ -6,9 +7,19 @@ discord-interactions
 
 Types and helper functions that may come in handy when you implement a Discord Interactions webhook.
 
+## Overview
+
+This library provides a simple interface for working with slash commands and Discord.  You can build applications that allow users to use [Interactions](https://discord.com/developers/docs/interactions/overview) to send commands to your app.  When a user runs such a command, Discord will send an HTTP request to your web application.  This library makes it easier to:
+
+- Verify that requests to your endpoint are actually coming from Discord
+- Integrate verification with web frameworks that use [connect middleware](https://expressjs.com/en/guide/using-middleware.html) (like express)
+- Use lightweight enums and TypeScript types to aid in handling request payloads and responses
+
+To learn more about building on Discord, see [https://discord.dev](https://discord.dev).
+
 ## Installation
 
-```
+```sh
 npm install discord-interactions
 ```
 
@@ -47,36 +58,33 @@ app.post('/interactions', verifyKeyMiddleware('MY_CLIENT_PUBLIC_KEY'), (req, res
 
 Make sure that you do not use other middlewares like `body-parser`, which tamper with the request body, for interaction routes.
 
-## Exports
+### Interaction Types
 
-This module exports the following:
+The following enumerations are available to help working with interaction requests and responses. For more details, see the [examples](/examples/).
 
-### `InteractionType`
+|                            |                                                                           |
+|----------------------------|---------------------------------------------------------------------------|
+| `InteractionType`          | An enum of interaction types that can be POSTed to your webhook endpoint. |
+| `InteractionResponseType`  | An enum of response types you may provide in reply to Discord's webhook.  |
+| `InteractionResponseFlags` | An enum of flags you can set on your response data.                       |
 
-An enum of interaction types that can be POSTed to your webhook endpoint.
+### Message Components
 
-### `InteractionResponseType`
+This library contains lightweight TypeScript types and enums that are helpful when working with [Message Components](https://discord.com/developers/docs/interactions/message-components).  
 
-An enum of response types you may provide in reply to Discord's webhook.
+|                         |                                                                                                                                                   |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `MessageComponentTypes` | An enum of message component types that can be used in messages and modals.                                                                       |
+| `ActionRow`             | Type for [Action Rows](https://discord.com/developers/docs/interactions/message-components#action-rows)                                           |
+| `Button`                | Type for [Buttons](https://discord.com/developers/docs/interactions/message-components#buttons)                                                   |
+| `ButtonStyleTypes`      | Enum of available [Button Styles](https://discord.com/developers/docs/interactions/message-components#button-object-button-styles)                |
+| `StringSelect`          | Type for [String Selects](https://discord.com/developers/docs/interactions/message-components#select-menus)                                       |
+| `StringSelectOption`    | Type for [String Select Options](https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure)  |
+| `InputText`             | Structure for `[Text Inputs](https://discord.com/developers/docs/interactions/message-components#text-inputs)                                     |
+| `TextStyleTypes`        | Enum for [Text Style Types](https://discord.com/developers/docs/interactions/message-components#text-input-object-text-input-styles)              |
 
-### `InteractionResponseFlags`
+For a complete list of available TypeScript types, check out [discord-api-types](https://www.npmjs.com/package/discord-api-types) package.
 
-An enum of flags you can set on your response data.
+## Learning more
 
-### `MessageComponentTypes`
-
-An enum of message component types that can be used in messages and modals.
-
-### Message components
-
-Types for the different message component structures: `Button`, `ActionRow`, `StringSelect`, and `InputText`.
-
-Also includes the enums `ButtonStyleTypes` and `TextStyleTypes`, and a `StringSelectOption` type.
-
-### `verifyKey(rawBody: Buffer, signature: string, timestamp: string, clientPublicKey: string): Promise<boolean>`
-
-Verify a signed payload POSTed to your webhook endpoint.
-
-### `verifyKeyMiddleware(clientPublicKey: string)`
-
-Express-style middleware that will verify request signatures (make sure you include this before any other middleware that modifies the request body).
+To learn more about the Discord API, visit [https://discord.dev](https://discord.dev).
