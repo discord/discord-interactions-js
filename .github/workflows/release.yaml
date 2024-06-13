@@ -1,0 +1,28 @@
+name: Publish Package to npm
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: 'projects/626179414504/locations/global/workloadIdentityPools/ga-discord-interactions-js/providers/ga-discord-interactions-js'
+          service_account: 'ga-discord-interactions-js@discord-app-city-prd.iam.gserviceaccount.com'
+      - id: secrets
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            NPM_TOKEN:discord-app-city-prd/discord-interactions-js-deploy-token
+      - name: Publish 🚀
+        run: pnpm publish --provenance --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.NPM_TOKEN }}
