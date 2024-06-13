@@ -15,32 +15,49 @@ export enum MessageComponentTypes {
 
 export type MessageComponent = Button | ActionRow | StringSelect | InputText;
 
-/**
- * Button component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
- */
-export type Button = {
-	type: MessageComponentTypes.BUTTON;
-	style:
-		| ButtonStyleTypes.PRIMARY
-		| ButtonStyleTypes.SECONDARY
-		| ButtonStyleTypes.SUCCESS
-		| ButtonStyleTypes.DANGER
-		| ButtonStyleTypes.LINK;
-	label: string;
-	emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
-	custom_id?: string;
-	url?: string;
-	disabled?: boolean;
-};
-
 export enum ButtonStyleTypes {
 	PRIMARY = 1,
 	SECONDARY = 2,
 	SUCCESS = 3,
 	DANGER = 4,
 	LINK = 5,
+	PREMIUM = 6,
 }
+
+interface BaseButton {
+	disabled?: boolean;
+	type: MessageComponentTypes.BUTTON;
+}
+
+interface LabeledButton extends BaseButton {
+	emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
+	label: string;
+}
+
+interface PremiumButton extends BaseButton {
+	sku_id: string;
+	style: ButtonStyleTypes.PREMIUM;
+}
+
+interface LinkButton extends LabeledButton {
+	url: string;
+	style: ButtonStyleTypes.LINK;
+}
+
+interface CustomButton extends LabeledButton {
+	custom_id: string;
+	style:
+		| ButtonStyleTypes.PRIMARY
+		| ButtonStyleTypes.SECONDARY
+		| ButtonStyleTypes.SUCCESS
+		| ButtonStyleTypes.DANGER;
+}
+
+/**
+ * Button component
+ * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
+ */
+export type Button = CustomButton | LinkButton | PremiumButton;
 
 /**
  * Action row component
