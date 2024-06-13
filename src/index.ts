@@ -76,8 +76,6 @@ export enum InteractionResponseFlags {
 	EPHEMERAL = 1 << 6,
 }
 
-
-
 /**
  * Validates a payload from Discord against its signature and key.
  *
@@ -101,7 +99,7 @@ export async function verifyKey(
 			typeof clientPublicKey === 'string'
 				? await subtleCrypto.importKey(
 						'raw',
-					valueToUint8Array(clientPublicKey, 'hex'),
+						valueToUint8Array(clientPublicKey, 'hex'),
 						{
 							name: 'ed25519',
 							namedCurve: 'ed25519',
