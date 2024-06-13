@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import { base64ToArrayBuffer, subtleCrypto } from './util';
+import { concatUint8Arrays, subtleCrypto, valueToUint8Array } from './util';
 
 /**
  * The type of interaction this request is.
@@ -76,6 +76,8 @@ export enum InteractionResponseFlags {
 	EPHEMERAL = 1 << 6,
 }
 
+
+
 /**
  * Validates a payload from Discord against its signature and key.
  *
@@ -92,12 +94,14 @@ export async function verifyKey(
 	clientPublicKey: string | CryptoKey,
 ): Promise<boolean> {
 	try {
-		const encoder = new TextEncoder();
+		const timestampData = valueToUint8Array(timestamp);
+		const bodyData = valueToUint8Array(rawBody);
+		const message = concatUint8Arrays(timestampData, bodyData);
 		const publicKey =
 			typeof clientPublicKey === 'string'
 				? await subtleCrypto.importKey(
 						'raw',
-						base64ToArrayBuffer(clientPublicKey),
+					valueToUint8Array(clientPublicKey, 'hex'),
 						{
 							name: 'ed25519',
 							namedCurve: 'ed25519',
@@ -106,20 +110,18 @@ export async function verifyKey(
 						['verify'],
 					)
 				: clientPublicKey;
-		const body =
-			typeof rawBody === 'string'
-				? rawBody
-				: Buffer.from(rawBody).toString('utf-8');
 		const isValid = await subtleCrypto.verify(
 			{
 				name: 'ed25519',
 			},
 			publicKey,
-			base64ToArrayBuffer(signature),
-			encoder.encode(timestamp + body),
+			valueToUint8Array(signature, 'hex'),
+			message,
 		);
+		console.log(`isValid: ${isValid}`);
 		return isValid;
 	} catch (ex) {
+		console.error(ex);
 		return false;
 	}
 }

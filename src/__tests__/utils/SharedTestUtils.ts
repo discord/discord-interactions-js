@@ -1,4 +1,4 @@
-import { arrayBufferToBase64, subtleCrypto } from '../../util';
+import { subtleCrypto } from '../../util';
 
 // Example PING request body
 export const pingRequestBody = JSON.stringify({
@@ -77,18 +77,17 @@ export async function signRequestWithKeyPair(
 	body: string,
 	privateKey: CryptoKey,
 ) {
-	const encoder = new TextEncoder();
 	const timestamp = String(Math.round(new Date().getTime() / 1000));
 	const signature = await subtleCrypto.sign(
 		{
 			name: 'ed25519',
 		},
 		privateKey,
-		encoder.encode(timestamp + body),
+		Uint8Array.from(Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])),
 	);
 	return {
 		body,
-		signature: arrayBufferToBase64(signature),
+		signature: Buffer.from(signature).toString('hex'),
 		timestamp,
 	};
 }
