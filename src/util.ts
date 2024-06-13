@@ -13,8 +13,8 @@ function getSubtleCrypto(): SubtleCrypto {
 		return crypto.subtle;
 	}
 	if (typeof require === 'function') {
-		// Cloudflare workers are doing what appears to be a regex check to look and
-		// warn for this pattern. We should never get her in a cloudflare worker, so
+		// Cloudflare Workers are doing what appears to be a regex check to look and
+		// warn for this pattern. We should never get here in a Cloudflare Worker, so
 		// I am being coy to avoid detection and a warning.
 		const cryptoPackage = 'node:crypto';
 		const crypto = require(cryptoPackage);
