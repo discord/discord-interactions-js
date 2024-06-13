@@ -10,15 +10,16 @@ import {
 import {
 	applicationCommandRequestBody,
 	autocompleteRequestBody,
-	invalidKeyPair,
+	generateKeyPair,
 	messageComponentRequestBody,
 	pingRequestBody,
 	sendExampleRequest,
 	signRequestWithKeyPair,
-	validKeyPair,
 } from './utils/SharedTestUtils';
 
 import express from 'express';
+import { subtleCrypto } from '../util';
+
 const expressApp = express();
 
 const exampleApplicationCommandResponse = {
@@ -48,55 +49,63 @@ const exampleAutocompleteResponse = {
 	},
 };
 
-let requestBody: unknown = undefined;
-
-expressApp.post(
-	'/interactions',
-	(req, _res, next) => {
-		if (requestBody) {
-			req.body = requestBody;
-		}
-		next();
-	},
-	verifyKeyMiddleware(Buffer.from(validKeyPair.publicKey).toString('hex')),
-	(req: Request, res: Response) => {
-		const interaction = req.body;
-		if (interaction.type === InteractionType.APPLICATION_COMMAND) {
-			res.send(exampleApplicationCommandResponse);
-		} else if (interaction.type === InteractionType.MESSAGE_COMPONENT) {
-			res.send(exampleMessageComponentResponse);
-		} else if (
-			interaction.type === InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE
-		) {
-			res.send(exampleAutocompleteResponse);
-		}
-	},
-);
-
+let requestBody: unknown;
 let expressAppServer: http.Server;
 let exampleInteractionsUrl: string;
 
-beforeAll(async () => {
-	await new Promise<void>((resolve) => {
-		expressAppServer = expressApp.listen(0);
-		resolve();
-	});
-	exampleInteractionsUrl = `http://localhost:${
-		(expressAppServer.address() as AddressInfo).port
-	}/interactions`;
-});
-
 describe('verify key middleware', () => {
+	let validKeyPair: CryptoKeyPair;
+	let invalidKeyPair: CryptoKeyPair;
+
 	afterEach(() => {
 		requestBody = undefined;
 		jest.restoreAllMocks();
 	});
 
+	beforeAll(async () => {
+		validKeyPair = await generateKeyPair();
+		invalidKeyPair = await generateKeyPair();
+		const rawPublicKey = Buffer.from(
+			await subtleCrypto.exportKey('raw', validKeyPair.publicKey),
+		).toString('hex');
+
+		expressApp.post(
+			'/interactions',
+			(req, _res, next) => {
+				if (requestBody) {
+					req.body = requestBody;
+				}
+				next();
+			},
+			verifyKeyMiddleware(rawPublicKey),
+			(req: Request, res: Response) => {
+				const interaction = req.body;
+				if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+					res.send(exampleApplicationCommandResponse);
+				} else if (interaction.type === InteractionType.MESSAGE_COMPONENT) {
+					res.send(exampleMessageComponentResponse);
+				} else if (
+					interaction.type === InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE
+				) {
+					res.send(exampleAutocompleteResponse);
+				}
+			},
+		);
+
+		await new Promise<void>((resolve) => {
+			expressAppServer = expressApp.listen(0);
+			resolve();
+		});
+		exampleInteractionsUrl = `http://localhost:${
+			(expressAppServer.address() as AddressInfo).port
+		}/interactions`;
+	});
+
 	it('valid ping', async () => {
 		// Sign and verify a valid ping request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -112,9 +121,9 @@ describe('verify key middleware', () => {
 
 	it('valid application command', async () => {
 		// Sign and verify a valid application command request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			applicationCommandRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -133,9 +142,9 @@ describe('verify key middleware', () => {
 
 	it('valid message component', async () => {
 		// Sign and verify a valid message component request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			messageComponentRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -154,9 +163,9 @@ describe('verify key middleware', () => {
 
 	it('valid autocomplete', async () => {
 		// Sign and verify a valid autocomplete request
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			autocompleteRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -175,9 +184,9 @@ describe('verify key middleware', () => {
 
 	it('invalid key', async () => {
 		// Sign a request with a different private key and verify with the valid public key
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			invalidKeyPair.secretKey,
+			invalidKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -193,9 +202,9 @@ describe('verify key middleware', () => {
 
 	it('invalid body', async () => {
 		// Sign a valid request and verify with an invalid body
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -211,9 +220,9 @@ describe('verify key middleware', () => {
 
 	it('invalid signature', async () => {
 		// Sign a valid request and verify with an invalid signature
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -229,9 +238,9 @@ describe('verify key middleware', () => {
 
 	it('invalid timestamp', async () => {
 		// Sign a valid request and verify with an invalid timestamp
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		const exampleRequestResponse = await sendExampleRequest(
 			exampleInteractionsUrl,
@@ -266,9 +275,9 @@ describe('verify key middleware', () => {
 	});
 
 	it('handles string bodies from middleware', async () => {
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		requestBody = signedRequest.body;
 		const exampleRequestResponse = await sendExampleRequest(
@@ -287,9 +296,9 @@ describe('verify key middleware', () => {
 		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
 			return;
 		});
-		const signedRequest = signRequestWithKeyPair(
+		const signedRequest = await signRequestWithKeyPair(
 			pingRequestBody,
-			validKeyPair.secretKey,
+			validKeyPair.privateKey,
 		);
 		requestBody = JSON.parse(signedRequest.body);
 		const exampleRequestResponse = await sendExampleRequest(

@@ -9,7 +9,7 @@
     "url": "https://github.com/discord/discord-interactions-js.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.4.0"
   },
   "bugs": {
     "url": "https://github.com/discord/discord-interactions-js/issues"
@@ -18,12 +18,12 @@
   "files": [
     "dist/**/*"
   ],
-  "prepare": "npm run build",
   "types": "dist/index.d.ts",
   "keywords": [
     "discord"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "fix": "biome check --apply .",
@@ -31,7 +31,6 @@
     "test": "jest --verbose"
   },
   "dependencies": {
-    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.7.3",
