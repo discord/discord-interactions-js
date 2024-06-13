@@ -1,4 +1,4 @@
-import nacl from 'tweetnacl';
+import { subtleCrypto } from '../../util';
 
 // Example PING request body
 export const pingRequestBody = JSON.stringify({
@@ -51,10 +51,17 @@ export const autocompleteRequestBody = JSON.stringify({
 	},
 });
 
-// Generate a "valid" keypair
-export const validKeyPair = nacl.sign.keyPair();
-// Generate an "invalid" keypair
-export const invalidKeyPair = nacl.sign.keyPair();
+export async function generateKeyPair() {
+	const keyPair = await subtleCrypto.generateKey(
+		{
+			name: 'ed25519',
+			namedCurve: 'ed25519',
+		},
+		true,
+		['sign', 'verify'],
+	);
+	return keyPair;
+}
 
 export type SignedRequest = {
 	body: string;
@@ -66,22 +73,21 @@ export type ExampleRequestResponse = {
 	body: string;
 };
 
-export function signRequestWithKeyPair(
+export async function signRequestWithKeyPair(
 	body: string,
-	privateKey: Uint8Array,
-): SignedRequest {
+	privateKey: CryptoKey,
+) {
 	const timestamp = String(Math.round(new Date().getTime() / 1000));
-	const signature = Buffer.from(
-		nacl.sign.detached(
-			Uint8Array.from(
-				Buffer.concat([Buffer.from(timestamp), Buffer.from(body)]),
-			),
-			privateKey,
-		),
-	).toString('hex');
+	const signature = await subtleCrypto.sign(
+		{
+			name: 'ed25519',
+		},
+		privateKey,
+		Uint8Array.from(Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])),
+	);
 	return {
 		body,
-		signature,
+		signature: Buffer.from(signature).toString('hex'),
 		timestamp,
 	};
 }
