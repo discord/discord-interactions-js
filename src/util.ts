@@ -4,19 +4,15 @@
  */
 function getSubtleCrypto(): SubtleCrypto {
 	if (typeof window !== 'undefined' && window.crypto) {
-		console.log('using window.crypto');
 		return window.crypto.subtle;
 	}
 	if (typeof globalThis !== 'undefined' && globalThis.crypto) {
-		console.log('using globalThis.crypto');
 		return globalThis.crypto.subtle;
 	}
 	if (typeof crypto !== 'undefined') {
-		console.log('using crypto');
 		return crypto.subtle;
 	}
 	if (typeof require === 'function') {
-		console.log('using npm builtin');
 		// Cloudflare workers are doing what appears to be a regex check to look and
 		// warn for this pattern. We should never get her in a cloudflare worker, so
 		// I am being coy to avoid detection and a warning.

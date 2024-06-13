@@ -126,7 +126,7 @@ describe('verify key method', () => {
 			validKeyPair.privateKey,
 		);
 		const isValid = await verifyKey(
-			'example invalid body',
+			signedRequest.body,
 			signedRequest.signature,
 			String(Math.round(new Date().getTime() / 1000) - 10000),
 			validKeyPair.publicKey,

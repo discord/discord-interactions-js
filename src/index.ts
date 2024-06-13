@@ -116,10 +116,8 @@ export async function verifyKey(
 			valueToUint8Array(signature, 'hex'),
 			message,
 		);
-		console.log(`isValid: ${isValid}`);
 		return isValid;
 	} catch (ex) {
-		console.error(ex);
 		return false;
 	}
 }
