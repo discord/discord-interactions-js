@@ -26,6 +26,6 @@ jobs:
           secrets: |-
             NPM_TOKEN:discord-app-city-prd/discord-interactions-js-deploy-token
       - name: Publish 🚀
-        run: pnpm publish --provenance --access public --no-git-checks
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.NPM_TOKEN }}
