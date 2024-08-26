@@ -63,6 +63,11 @@ export enum InteractionResponseType {
 	 * Respond with an upgrade prompt.
 	 */
 	PREMIUM_REQUIRED = 10,
+
+	/**
+	 * Launch an Activity.
+	 */
+	LAUNCH_ACTIVITY = 12,
 }
 
 /**
