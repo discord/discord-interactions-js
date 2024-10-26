@@ -6,7 +6,6 @@ export enum WebhookType {
 	 * A ping.
 	 */
 	PING = 0,
-
 	/**
 	 * A webhook event.
 	 */
