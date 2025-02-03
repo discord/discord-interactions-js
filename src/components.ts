@@ -13,7 +13,7 @@ export enum MessageComponentTypes {
 	CHANNEL_SELECT = 8,
 }
 
-export type MessageComponent = 
+export type MessageComponent =
 	| ActionRow
 	| Button
 	| StringSelect
