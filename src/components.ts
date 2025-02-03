@@ -13,7 +13,15 @@ export enum MessageComponentTypes {
 	CHANNEL_SELECT = 8,
 }
 
-export type MessageComponent = Button | ActionRow | StringSelect | InputText;
+export type MessageComponent =
+	| ActionRow
+	| Button
+	| StringSelect
+	| UserSelect
+	| RoleSelect
+	| MentionableSelect
+	| ChannelSelect
+	| InputText;
 
 export enum ButtonStyleTypes {
 	PRIMARY = 1,
@@ -65,7 +73,15 @@ export type Button = CustomButton | LinkButton | PremiumButton;
  */
 export type ActionRow = {
 	type: MessageComponentTypes.ACTION_ROW;
-	components: Exclude<MessageComponent, ActionRow>[];
+	components: Array<
+		| Button
+		| StringSelect
+		| UserSelect
+		| RoleSelect
+		| MentionableSelect
+		| ChannelSelect
+		| InputText
+	>;
 };
 
 export type SelectComponentType =
