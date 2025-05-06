@@ -32,7 +32,12 @@ export enum ButtonStyleTypes {
 	PREMIUM = 6,
 }
 
-interface BaseButton {
+interface BaseComponent {
+	type: MessageComponentTypes;
+	id?: number;
+}
+
+interface BaseButton extends BaseComponent {
 	disabled?: boolean;
 	type: MessageComponentTypes.BUTTON;
 }
@@ -71,7 +76,7 @@ export type Button = CustomButton | LinkButton | PremiumButton;
  * Action row component
  * @see {@link https://discord.com/developers/docs/components/reference#action-row}
  */
-export type ActionRow = {
+export type ActionRow = BaseComponent & {
 	type: MessageComponentTypes.ACTION_ROW;
 	components: Array<
 		| Button
@@ -92,7 +97,7 @@ export type SelectComponentType =
 	| MessageComponentTypes.CHANNEL_SELECT;
 
 // This parent type is to simplify the individual selects while keeping descriptive generated type hints
-export type SelectMenu<T extends SelectComponentType> = {
+export type SelectMenu<T extends SelectComponentType> = BaseComponent & {
 	type: T;
 	custom_id: string;
 	placeholder?: string;
