@@ -70,7 +70,6 @@ The following enumerations are available to help working with interaction reques
 
 ### Message Components
 
-This library contains lightweight TypeScript types and enums that are helpful when working with [Message Components](https://discord.com/developers/docs/interactions/message-components).  
 
 |                         |                                                                                                                                                   |
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -82,6 +81,7 @@ This library contains lightweight TypeScript types and enums that are helpful wh
 | `StringSelectOption`    | Type for [String Select Options](https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure)  |
 | `InputText`             | Structure for `[Text Inputs](https://discord.com/developers/docs/interactions/message-components#text-inputs)                                     |
 | `TextStyleTypes`        | Enum for [Text Style Types](https://discord.com/developers/docs/interactions/message-components#text-input-object-text-input-styles)              |
+This library contains lightweight TypeScript types and enums that are helpful when working with [Message Components](https://discord.com/developers/docs/components/reference).  
 
 For a complete list of available TypeScript types, check out [discord-api-types](https://www.npmjs.com/package/discord-api-types) package.
 

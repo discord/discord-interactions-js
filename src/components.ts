@@ -1,6 +1,6 @@
 /**
  * The type of component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
+ * @see {@link https://discord.com/developers/docs/components/reference#what-is-a-component}
  */
 export enum MessageComponentTypes {
 	ACTION_ROW = 1,
@@ -63,13 +63,13 @@ interface CustomButton extends LabeledButton {
 
 /**
  * Button component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#button}
  */
 export type Button = CustomButton | LinkButton | PremiumButton;
 
 /**
  * Action row component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#action-rows}
+ * @see {@link https://discord.com/developers/docs/components/reference#action-row}
  */
 export type ActionRow = {
 	type: MessageComponentTypes.ACTION_ROW;
@@ -105,7 +105,7 @@ export type SelectMenu<T extends SelectComponentType> = {
 
 /**
  * Text select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#string-select}
  */
 export type StringSelect = Omit<
 	SelectMenu<MessageComponentTypes.STRING_SELECT>,
@@ -122,7 +122,7 @@ export type StringSelectOption = {
 
 /**
  * User select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#user-select}
  */
 export type UserSelect = Omit<
 	SelectMenu<MessageComponentTypes.USER_SELECT>,
@@ -131,7 +131,7 @@ export type UserSelect = Omit<
 
 /**
  * Role select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#role-select}
  */
 export type RoleSelect = Omit<
 	SelectMenu<MessageComponentTypes.ROLE_SELECT>,
@@ -140,7 +140,7 @@ export type RoleSelect = Omit<
 
 /**
  * Mentionable (role & user) select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#mentionable-select}
  */
 export type MentionableSelect = Omit<
 	SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>,
@@ -149,7 +149,7 @@ export type MentionableSelect = Omit<
 
 /**
  * Channel select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#channel-select}
  */
 export type ChannelSelect = Omit<
 	SelectMenu<MessageComponentTypes.CHANNEL_SELECT>,
@@ -168,7 +168,7 @@ export enum ChannelTypes {
 
 /**
  * Text input component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#text-input}
  */
 export type InputText = {
 	type: MessageComponentTypes.INPUT_TEXT;
