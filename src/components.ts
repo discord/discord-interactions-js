@@ -11,6 +11,13 @@ export enum MessageComponentTypes {
 	ROLE_SELECT = 6,
 	MENTIONABLE_SELECT = 7,
 	CHANNEL_SELECT = 8,
+	SECTION = 9,
+	TEXT_DISPLAY = 10,
+	THUMBNAIL = 11,
+	MEDIA_GALLERY = 12,
+	FILE = 13,
+	SEPARATOR = 14,
+	CONTAINER = 17,
 }
 
 export type MessageComponent =
@@ -21,7 +28,14 @@ export type MessageComponent =
 	| RoleSelect
 	| MentionableSelect
 	| ChannelSelect
-	| InputText;
+	| InputText
+	| Section
+	| TextDisplay
+	| Thumbnail
+	| MediaGallery
+	| FileComponent
+	| Separator
+	| Container;
 
 export enum ButtonStyleTypes {
 	PRIMARY = 1,
@@ -204,3 +218,93 @@ export type EmojiInfo = {
 	available?: boolean;
 	animated?: boolean;
 };
+
+
+/**
+ * Section component
+ * @see {@link https://discord.com/developers/docs/components/reference#section}
+ */
+export interface Section extends BaseComponent {
+	type: MessageComponentTypes.SECTION;
+	components: TextDisplay[] & { length: 1 | 2 | 3 };
+	accessory: Thumbnail | Button;
+}
+
+/**
+ * Text display component
+ * @see {@link https://discord.com/developers/docs/components/reference#text-display}
+ */
+export interface TextDisplay extends BaseComponent {
+	type: MessageComponentTypes.TEXT_DISPLAY;
+	content: string;
+}
+
+/**
+ * Thumbnail component
+ * @see {@link https://discord.com/developers/docs/components/reference#thumbnail}
+ */
+export interface Thumbnail extends BaseComponent {
+	type: MessageComponentTypes.THUMBNAIL;
+	media: UnfurledMediaItem;
+	description?: string;
+	spoiler?: boolean;
+}
+
+/**
+ * Media gallery component
+ * @see {@link https://discord.com/developers/docs/components/reference#media-gallery}
+ */
+export interface MediaGallery extends BaseComponent {
+	type: MessageComponentTypes.MEDIA_GALLERY;
+	items: Array<MediaGalleryItem>;
+}
+
+export interface MediaGalleryItem {
+	media: UnfurledMediaItem;
+	description?: string;
+	spoiler?: boolean;
+}
+
+/**
+ * File component
+ * @see {@link https://discord.com/developers/docs/components/reference#file}
+ */
+export interface FileComponent extends BaseComponent {
+	type: MessageComponentTypes.FILE;
+	file: UnfurledMediaItem;
+	spoiler?: boolean;
+}
+
+/**
+ * Separator component
+ * @see {@link https://discord.com/developers/docs/components/reference#separator}
+ */
+export interface Separator extends BaseComponent {
+	type: MessageComponentTypes.SEPARATOR;
+	divider?: boolean;
+	spacing?: SeparatorSpacingTypes;
+}
+
+export enum SeparatorSpacingTypes {
+	SMALL = 1,
+	LARGE = 2,
+}
+
+/**
+ * Container component
+ * @see {@link https://discord.com/developers/docs/components/reference#container}
+ */
+export interface Container extends BaseComponent {
+	type: MessageComponentTypes.CONTAINER;
+	components: Array<MessageComponent>;
+	accent_color?: number | null;
+	spoiler?: boolean;
+}
+
+export interface UnfurledMediaItem {
+	url: string;
+	proxy_url?: string;
+	height?: number | null;
+	width?: number | null;
+	content_type?: string;
+}
