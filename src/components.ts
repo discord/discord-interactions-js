@@ -118,18 +118,15 @@ export type SelectMenu<T extends SelectComponentType> = BaseComponent & {
 	min_values?: number;
 	max_values?: number;
 	disabled?: boolean;
-	options: StringSelectOption[];
-	channel_types?: ChannelTypes[];
 };
 
 /**
  * Text select menu component
  * @see {@link https://discord.com/developers/docs/components/reference#string-select}
  */
-export type StringSelect = Omit<
-	SelectMenu<MessageComponentTypes.STRING_SELECT>,
-	'channel_types'
->;
+export type StringSelect = SelectMenu<MessageComponentTypes.STRING_SELECT> & {
+	options: StringSelectOption[];
+};
 
 export type StringSelectOption = {
 	label: string;
@@ -143,37 +140,28 @@ export type StringSelectOption = {
  * User select menu component
  * @see {@link https://discord.com/developers/docs/components/reference#user-select}
  */
-export type UserSelect = Omit<
-	SelectMenu<MessageComponentTypes.USER_SELECT>,
-	'channel_types' | 'options'
->;
+export type UserSelect = SelectMenu<MessageComponentTypes.USER_SELECT>;
 
 /**
  * Role select menu component
  * @see {@link https://discord.com/developers/docs/components/reference#role-select}
  */
-export type RoleSelect = Omit<
-	SelectMenu<MessageComponentTypes.ROLE_SELECT>,
-	'channel_types' | 'options'
->;
+export type RoleSelect = SelectMenu<MessageComponentTypes.ROLE_SELECT>;
 
 /**
  * Mentionable (role & user) select menu component
  * @see {@link https://discord.com/developers/docs/components/reference#mentionable-select}
  */
-export type MentionableSelect = Omit<
-	SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>,
-	'channel_types' | 'options'
->;
+export type MentionableSelect =
+	SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>;
 
 /**
  * Channel select menu component
  * @see {@link https://discord.com/developers/docs/components/reference#channel-select}
  */
-export type ChannelSelect = Omit<
-	SelectMenu<MessageComponentTypes.CHANNEL_SELECT>,
-	'options'
->;
+export type ChannelSelect = SelectMenu<MessageComponentTypes.CHANNEL_SELECT> & {
+	channel_types?: ChannelTypes[];
+};
 
 export enum ChannelTypes {
 	DM = 1,
