@@ -207,7 +207,6 @@ export type EmojiInfo = {
 	animated?: boolean;
 };
 
-
 /**
  * Section component
  * @see {@link https://discord.com/developers/docs/components/reference#section}
