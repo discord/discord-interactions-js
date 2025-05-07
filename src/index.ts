@@ -79,6 +79,12 @@ export enum InteractionResponseFlags {
 	 * does not persist between sessions.
 	 */
 	EPHEMERAL = 1 << 6,
+
+	/**
+	 * Allows you to create fully component-driven messages
+	 * @see {@link https://discord.com/developers/docs/components/reference}
+	 */
+	IS_COMPONENTS_V2 = 1 << 15,
 }
 
 /**

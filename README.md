@@ -70,18 +70,31 @@ The following enumerations are available to help working with interaction reques
 
 ### Message Components
 
-This library contains lightweight TypeScript types and enums that are helpful when working with [Message Components](https://discord.com/developers/docs/interactions/message-components).  
+This library contains lightweight TypeScript types and enums that are helpful when working with [Message Components](https://discord.com/developers/docs/components/reference).  
 
-|                         |                                                                                                                                                   |
-|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `MessageComponentTypes` | An enum of message component types that can be used in messages and modals.                                                                       |
-| `ActionRow`             | Type for [Action Rows](https://discord.com/developers/docs/interactions/message-components#action-rows)                                           |
-| `Button`                | Type for [Buttons](https://discord.com/developers/docs/interactions/message-components#buttons)                                                   |
-| `ButtonStyleTypes`      | Enum of available [Button Styles](https://discord.com/developers/docs/interactions/message-components#button-object-button-styles)                |
-| `StringSelect`          | Type for [String Selects](https://discord.com/developers/docs/interactions/message-components#select-menus)                                       |
-| `StringSelectOption`    | Type for [String Select Options](https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure)  |
-| `InputText`             | Structure for `[Text Inputs](https://discord.com/developers/docs/interactions/message-components#text-inputs)                                     |
-| `TextStyleTypes`        | Enum for [Text Style Types](https://discord.com/developers/docs/interactions/message-components#text-input-object-text-input-styles)              |
+|                         |                                                                                                                                       |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `MessageComponentTypes` | An enum of message component types that can be used in messages and modals.                                                           |
+| `ActionRow`             | Type for [Action Rows](https://discord.com/developers/docs/components/reference#action-row)                                           |
+| `Button`                | Type for [Buttons](https://discord.com/developers/docs/components/reference#button)                                                   |
+| `ButtonStyleTypes`      | Enum for [Button Styles](https://discord.com/developers/docs/components/reference#button-button-styles)                               |
+| `StringSelect`          | Type for [String Selects](https://discord.com/developers/docs/components/reference#string-select)                                     |
+| `StringSelectOption`    | Type for [String Select Options](https://discord.com/developers/docs/components/reference#string-select-select-option-structure)      |
+| `UserSelect`            | Type for [User Selects](https://discord.com/developers/docs/components/reference#user-select)                                         |
+| `RoleSelect`            | Type for [Role Selects](https://discord.com/developers/docs/components/reference#role-select)                                         |
+| `MentionableSelect`     | Type for [Mentionable Selects](https://discord.com/developers/docs/components/reference#mentionable-select)                           |
+| `ChannelSelect`         | Type for [Channel Selects](https://discord.com/developers/docs/components/reference#channel-select)                                   |
+| `InputText`             | Type for [Text Inputs](https://discord.com/developers/docs/components/reference#text-input)                                           |
+| `TextStyleTypes`        | Enum for [Text Style Types](https://discord.com/developers/docs/components/reference#text-input-text-input-styles)                    |
+| `Section`               | Type for [Sections](https://discord.com/developers/docs/components/reference#section)                                                 |
+| `TextDisplay`           | Type for [Text Displays](https://discord.com/developers/docs/components/reference#text-display)                                       |
+| `Thumbnail`             | Type for [Thumbnails](https://discord.com/developers/docs/components/reference#thumbnail)                                             |
+| `MediaGallery`          | Type for [Media Galleries](https://discord.com/developers/docs/components/reference#media-gallery)                                    |
+| `MediaGalleryItem`      | Type for [Media Gallery Item](https://discord.com/developers/docs/components/reference#media-gallery-media-gallery-item-structure)    |
+| `FileComponent`         | Type for [File Components](https://discord.com/developers/docs/components/reference#file)                                             |
+| `Separator`             | Type for [Separators](https://discord.com/developers/docs/components/reference#separator)                                             |
+| `Container`             | Type for [Containers](https://discord.com/developers/docs/components/reference#container)                                             |
+| `UnfurledMediaItem`     | Type for [Unfurled Media Item](https://discord.com/developers/docs/components/reference#unfurled-media-item-structure)                |
 
 For a complete list of available TypeScript types, check out [discord-api-types](https://www.npmjs.com/package/discord-api-types) package.
 

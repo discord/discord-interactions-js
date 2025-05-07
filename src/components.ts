@@ -1,6 +1,6 @@
 /**
  * The type of component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
+ * @see {@link https://discord.com/developers/docs/components/reference#what-is-a-component}
  */
 export enum MessageComponentTypes {
 	ACTION_ROW = 1,
@@ -11,6 +11,13 @@ export enum MessageComponentTypes {
 	ROLE_SELECT = 6,
 	MENTIONABLE_SELECT = 7,
 	CHANNEL_SELECT = 8,
+	SECTION = 9,
+	TEXT_DISPLAY = 10,
+	THUMBNAIL = 11,
+	MEDIA_GALLERY = 12,
+	FILE = 13,
+	SEPARATOR = 14,
+	CONTAINER = 17,
 }
 
 export type MessageComponent =
@@ -21,7 +28,14 @@ export type MessageComponent =
 	| RoleSelect
 	| MentionableSelect
 	| ChannelSelect
-	| InputText;
+	| InputText
+	| Section
+	| TextDisplay
+	| Thumbnail
+	| MediaGallery
+	| FileComponent
+	| Separator
+	| Container;
 
 export enum ButtonStyleTypes {
 	PRIMARY = 1,
@@ -32,7 +46,12 @@ export enum ButtonStyleTypes {
 	PREMIUM = 6,
 }
 
-interface BaseButton {
+interface BaseComponent {
+	type: MessageComponentTypes;
+	id?: number;
+}
+
+interface BaseButton extends BaseComponent {
 	disabled?: boolean;
 	type: MessageComponentTypes.BUTTON;
 }
@@ -63,15 +82,15 @@ interface CustomButton extends LabeledButton {
 
 /**
  * Button component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#button}
  */
 export type Button = CustomButton | LinkButton | PremiumButton;
 
 /**
  * Action row component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#action-rows}
+ * @see {@link https://discord.com/developers/docs/components/reference#action-row}
  */
-export type ActionRow = {
+export type ActionRow = BaseComponent & {
 	type: MessageComponentTypes.ACTION_ROW;
 	components: Array<
 		| Button
@@ -92,25 +111,22 @@ export type SelectComponentType =
 	| MessageComponentTypes.CHANNEL_SELECT;
 
 // This parent type is to simplify the individual selects while keeping descriptive generated type hints
-export type SelectMenu<T extends SelectComponentType> = {
+export type SelectMenu<T extends SelectComponentType> = BaseComponent & {
 	type: T;
 	custom_id: string;
 	placeholder?: string;
 	min_values?: number;
 	max_values?: number;
 	disabled?: boolean;
-	options: StringSelectOption[];
-	channel_types?: ChannelTypes[];
 };
 
 /**
  * Text select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#string-select}
  */
-export type StringSelect = Omit<
-	SelectMenu<MessageComponentTypes.STRING_SELECT>,
-	'channel_types'
->;
+export type StringSelect = SelectMenu<MessageComponentTypes.STRING_SELECT> & {
+	options: StringSelectOption[];
+};
 
 export type StringSelectOption = {
 	label: string;
@@ -122,39 +138,30 @@ export type StringSelectOption = {
 
 /**
  * User select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#user-select}
  */
-export type UserSelect = Omit<
-	SelectMenu<MessageComponentTypes.USER_SELECT>,
-	'channel_types' | 'options'
->;
+export type UserSelect = SelectMenu<MessageComponentTypes.USER_SELECT>;
 
 /**
  * Role select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#role-select}
  */
-export type RoleSelect = Omit<
-	SelectMenu<MessageComponentTypes.ROLE_SELECT>,
-	'channel_types' | 'options'
->;
+export type RoleSelect = SelectMenu<MessageComponentTypes.ROLE_SELECT>;
 
 /**
  * Mentionable (role & user) select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#mentionable-select}
  */
-export type MentionableSelect = Omit<
-	SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>,
-	'channel_types' | 'options'
->;
+export type MentionableSelect =
+	SelectMenu<MessageComponentTypes.MENTIONABLE_SELECT>;
 
 /**
  * Channel select menu component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#channel-select}
  */
-export type ChannelSelect = Omit<
-	SelectMenu<MessageComponentTypes.CHANNEL_SELECT>,
-	'options'
->;
+export type ChannelSelect = SelectMenu<MessageComponentTypes.CHANNEL_SELECT> & {
+	channel_types?: ChannelTypes[];
+};
 
 export enum ChannelTypes {
 	DM = 1,
@@ -168,7 +175,7 @@ export enum ChannelTypes {
 
 /**
  * Text input component
- * @see {@link https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure}
+ * @see {@link https://discord.com/developers/docs/components/reference#text-input}
  */
 export type InputText = {
 	type: MessageComponentTypes.INPUT_TEXT;
@@ -199,3 +206,92 @@ export type EmojiInfo = {
 	available?: boolean;
 	animated?: boolean;
 };
+
+/**
+ * Section component
+ * @see {@link https://discord.com/developers/docs/components/reference#section}
+ */
+export interface Section extends BaseComponent {
+	type: MessageComponentTypes.SECTION;
+	components: TextDisplay[] & { length: 1 | 2 | 3 };
+	accessory: Thumbnail | Button;
+}
+
+/**
+ * Text display component
+ * @see {@link https://discord.com/developers/docs/components/reference#text-display}
+ */
+export interface TextDisplay extends BaseComponent {
+	type: MessageComponentTypes.TEXT_DISPLAY;
+	content: string;
+}
+
+/**
+ * Thumbnail component
+ * @see {@link https://discord.com/developers/docs/components/reference#thumbnail}
+ */
+export interface Thumbnail extends BaseComponent {
+	type: MessageComponentTypes.THUMBNAIL;
+	media: UnfurledMediaItem;
+	description?: string;
+	spoiler?: boolean;
+}
+
+/**
+ * Media gallery component
+ * @see {@link https://discord.com/developers/docs/components/reference#media-gallery}
+ */
+export interface MediaGallery extends BaseComponent {
+	type: MessageComponentTypes.MEDIA_GALLERY;
+	items: Array<MediaGalleryItem>;
+}
+
+export interface MediaGalleryItem {
+	media: UnfurledMediaItem;
+	description?: string;
+	spoiler?: boolean;
+}
+
+/**
+ * File component
+ * @see {@link https://discord.com/developers/docs/components/reference#file}
+ */
+export interface FileComponent extends BaseComponent {
+	type: MessageComponentTypes.FILE;
+	file: UnfurledMediaItem;
+	spoiler?: boolean;
+}
+
+/**
+ * Separator component
+ * @see {@link https://discord.com/developers/docs/components/reference#separator}
+ */
+export interface Separator extends BaseComponent {
+	type: MessageComponentTypes.SEPARATOR;
+	divider?: boolean;
+	spacing?: SeparatorSpacingTypes;
+}
+
+export enum SeparatorSpacingTypes {
+	SMALL = 1,
+	LARGE = 2,
+}
+
+/**
+ * Container component
+ * @see {@link https://discord.com/developers/docs/components/reference#container}
+ */
+export interface Container extends BaseComponent {
+	type: MessageComponentTypes.CONTAINER;
+	components: Array<MessageComponent>;
+	accent_color?: number | null;
+	spoiler?: boolean;
+}
+
+export interface UnfurledMediaItem {
+	url: string;
+	proxy_url?: string;
+	height?: number | null;
+	width?: number | null;
+	content_type?: string;
+}
