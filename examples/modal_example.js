@@ -14,7 +14,7 @@ app.post(
 		const interaction = req.body;
 		if (interaction.type === InteractionType.APPLICATION_COMMAND) {
 			res.send({
-				type: InteractionResponseType.APPLICATION_MODAL,
+				type: InteractionResponseType.MODAL,
 				data: {
 					title: 'Test',
 					custom_id: 'test-modal',
