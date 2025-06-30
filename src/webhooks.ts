@@ -22,6 +22,10 @@ export enum WebhookEventType {
 	 */
 	APPLICATION_AUTHORIZED = 'APPLICATION_AUTHORIZED',
 	/**
+ 	 * Event sent when an app is deauthorized by a user.
+   	 */
+	APPLICATION_DEAUTHORIZED = 'APPLICATION_DEAUTHORIZED',
+	/**
 	 * Event sent when an entitlement was created.
 	 */
 	ENTITLEMENT_CREATE = 'ENTITLEMENT_CREATE',
