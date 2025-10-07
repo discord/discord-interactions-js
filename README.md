@@ -5,15 +5,25 @@
 [![ci](https://github.com/discord/discord-interactions-js/actions/workflows/ci.yaml/badge.svg)](https://github.com/discord/discord-interactions-js/actions/workflows/ci.yaml)
 ![Downloads](https://img.shields.io/npm/dt/discord-interactions)
 
-Types and helper functions that may come in handy when you implement a Discord Interactions webhook.
+Types and helper functions that may come in handy when you implement a Discord webhook.
 
 ## Overview
 
-This library provides a simple interface for working with slash commands and Discord.  You can build applications that allow users to use [Interactions](https://discord.com/developers/docs/interactions/overview) to send commands to your app.  When a user runs such a command, Discord will send an HTTP request to your web application.  This library makes it easier to:
+This library provides a simple interface for working with Discord webhooks, including both slash command interactions
+and webhook events. You can build applications that:
 
-- Verify that requests to your endpoint are actually coming from Discord
-- Integrate verification with web frameworks that use [connect middleware](https://expressjs.com/en/guide/using-middleware.html) (like express)
+- Handle [Interactions](https://discord.com/developers/docs/interactions/overview) when users send commands to your app
+- Process [Webhook Events](https://discord.com/developers/docs/events/webhook-events) to receive real-time notifications
+  about activities in your Discord server
+
+When users interact with your application or when events occur in your Discord server, Discord will send HTTP requests
+to your web application. This library makes it easier to:
+
+- Verify that requests to your endpoint are actually coming from Discord (for both interactions and events)
+- Integrate verification with web frameworks that
+  use [connect middleware](https://expressjs.com/en/guide/using-middleware.html) (like express)
 - Use lightweight enums and TypeScript types to aid in handling request payloads and responses
+- Process different types of webhook payloads with type-safe interfaces
 
 To learn more about building on Discord, see [https://discord.dev](https://discord.dev).
 
@@ -23,9 +33,9 @@ To learn more about building on Discord, see [https://discord.dev](https://disco
 npm install discord-interactions
 ```
 
-## Usage
+## Interactions Usage
 
-Use the `InteractionType` and `InteractionResponseType` enums to figure out how to respond to a webhook.
+Use the `InteractionType` and `InteractionResponseType` enums to figure out how to respond to an interactions' webhook.
 
 Use `verifyKey` to check a request signature:
 
@@ -96,7 +106,61 @@ This library contains lightweight TypeScript types and enums that are helpful wh
 | `Container`             | Type for [Containers](https://discord.com/developers/docs/components/reference#container)                                             |
 | `UnfurledMediaItem`     | Type for [Unfurled Media Item](https://discord.com/developers/docs/components/reference#unfurled-media-item-structure)                |
 
+
+The following enumerations are available to help working with Webhook events. For more details, see the 
+[examples](/examples/).
+
+## Webhook Event Usage
+
+Use the `WebhookType` and `WebhookEventType` enums to figure out how to process an event webhook.
+
+Use `verifyKey` to check a request signature (same as above):
+
+```js
+ const signature = req.get('X-Signature-Ed25519');
+ const timestamp = req.get('X-Signature-Timestamp');
+ const isValidRequest = await verifyKey(req.rawBody, signature, timestamp, 'MY_CLIENT_PUBLIC_KEY');
+ if (!isValidRequest) {
+   return res.status(401).end('Bad request signature');
+ }
+```
+
+Note that `req.rawBody` must be populated by a middleware (it is also set by some cloud function providers).
+
+If you're using an express-like API, you can simplify things by using the `verifyWebhookEventMiddleware`.  For example:
+
+```javascript
+app.post(
+	'/events',
+	verifyWebhookEventMiddleware(process.env.CLIENT_PUBLIC_KEY),
+	(req, res) => {
+		console.log("📨 Event Received!")
+        console.log(req.body);
+	},
+);
+```
+
+### Webhook Event Types
+
+The following enumerations are available to help working with interaction requests and responses. 
+For more details, see the [express example](/examples/express_app.js).
+
+|                    |                                                                           |
+|--------------------|---------------------------------------------------------------------------|
+| `WebhookType`      | An enum of interaction types that can be POSTed to your webhook endpoint. |
+| `WebhookEventType` | An enum of response types you may provide in reply to Discord's webhook.  |
+
 For a complete list of available TypeScript types, check out [discord-api-types](https://www.npmjs.com/package/discord-api-types) package.
+
+## Running the Examples
+
+To run the examples:
+
+```shell
+npm run build 
+export CLIENT_PUBLIC_KEY=${Your Discord App Public Key} 
+node examples/express_app.js # or choose a different example
+```
 
 ## Learning more
 

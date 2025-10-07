@@ -1,8 +1,10 @@
 const express = require('express');
+const util = require('node:util');
 const {
 	InteractionType,
 	InteractionResponseType,
 	verifyKeyMiddleware,
+	verifyWebhookEventMiddleware,
 } = require('../dist');
 
 const app = express();
@@ -22,6 +24,22 @@ app.post(
 		}
 	},
 );
+
+app.post(
+	'/events',
+	verifyWebhookEventMiddleware(process.env.CLIENT_PUBLIC_KEY),
+	(req, res) => {
+		console.log('📨 Event Received!');
+		console.log(
+			util.inspect(req.body, { showHidden: false, colors: true, depth: null }),
+		);
+	},
+);
+
+// Simple health check, to also make it easy to check if the app is up and running
+app.get('/health', (req, res) => {
+	res.send('ok');
+});
 
 app.listen(8999, () => {
 	console.log('Example app listening at http://localhost:8999');
