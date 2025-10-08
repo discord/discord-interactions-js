@@ -21,7 +21,7 @@ jobs:
           workload_identity_provider: 'projects/626179414504/locations/global/workloadIdentityPools/ga-discord-interactions-js/providers/ga-discord-interactions-js'
           service_account: 'ga-discord-interactions-js@discord-app-city-prd.iam.gserviceaccount.com'
       - id: secrets
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        uses: 'google-github-actions/get-secretmanager-secrets@v3'
         with:
           secrets: |-
             NPM_TOKEN:discord-app-city-prd/discord-interactions-js-deploy-token
