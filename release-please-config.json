@@ -1,0 +1,8 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "discord-interactions"
+    }
+  }
+}
