@@ -1,12 +1,14 @@
 import type * as http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { Request, Response } from 'express';
+import express from 'express';
 import {
 	InteractionResponseFlags,
 	InteractionResponseType,
 	InteractionType,
 	verifyKeyMiddleware,
 } from '../index';
+import { subtleCrypto } from '../util';
 import {
 	applicationCommandRequestBody,
 	autocompleteRequestBody,
@@ -16,9 +18,6 @@ import {
 	sendExampleRequest,
 	signRequestWithKeyPair,
 } from './utils/SharedTestUtils';
-
-import express from 'express';
-import { subtleCrypto } from '../util';
 
 const expressApp = express();
 
@@ -246,9 +245,7 @@ describe('verify key middleware', () => {
 			exampleInteractionsUrl,
 			{
 				'x-signature-ed25519': signedRequest.signature,
-				'x-signature-timestamp': String(
-					Math.round(new Date().getTime() / 1000) - 10000,
-				),
+				'x-signature-timestamp': String(Math.round(Date.now() / 1000) - 10000),
 				'content-type': 'application/json',
 			},
 			signedRequest.body,

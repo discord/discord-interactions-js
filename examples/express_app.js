@@ -28,7 +28,7 @@ app.post(
 app.post(
 	'/events',
 	verifyWebhookEventMiddleware(process.env.CLIENT_PUBLIC_KEY),
-	(req, res) => {
+	(req, _res) => {
 		console.log('📨 Event Received!');
 		console.log(
 			util.inspect(req.body, { showHidden: false, colors: true, depth: null }),
@@ -37,7 +37,7 @@ app.post(
 );
 
 // Simple health check, to also make it easy to check if the app is up and running
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
 	res.send('ok');
 });
 

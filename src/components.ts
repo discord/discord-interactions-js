@@ -198,7 +198,7 @@ export type EmojiInfo = {
 	name: string | undefined;
 	id: string | undefined;
 	// Should define the user object in future
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: user object not fully typed yet
 	user?: { [key: string]: any };
 	roles?: string[];
 	require_colons?: boolean;

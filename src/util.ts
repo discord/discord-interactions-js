@@ -55,7 +55,7 @@ export function valueToUint8Array(
 		if (Buffer.isBuffer(value)) {
 			return new Uint8Array(value);
 		}
-	} catch (ex) {
+	} catch (_ex) {
 		// Runtime doesn't have Buffer
 	}
 	if (value instanceof ArrayBuffer) {

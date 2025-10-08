@@ -129,7 +129,7 @@ export async function verifyKey(
 			message,
 		);
 		return isValid;
-	} catch (ex) {
+	} catch (_ex) {
 		return false;
 	}
 }
