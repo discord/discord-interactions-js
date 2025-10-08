@@ -308,7 +308,7 @@ describe('verify key middleware', () => {
 			'',
 		);
 		expect(exampleRequestResponse.status).toBe(200);
-		expect(warnSpy).toBeCalled();
+		expect(warnSpy).toHaveBeenCalled();
 	});
 });
 
