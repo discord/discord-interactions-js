@@ -18,6 +18,7 @@ export enum MessageComponentTypes {
 	FILE = 13,
 	SEPARATOR = 14,
 	CONTAINER = 17,
+	LABEL = 18,
 }
 
 export type MessageComponent =
@@ -28,14 +29,15 @@ export type MessageComponent =
 	| RoleSelect
 	| MentionableSelect
 	| ChannelSelect
-	| InputText
+	| TextInput
 	| Section
 	| TextDisplay
 	| Thumbnail
 	| MediaGallery
 	| FileComponent
 	| Separator
-	| Container;
+	| Container
+	| Label;
 
 export enum ButtonStyleTypes {
 	PRIMARY = 1,
@@ -99,7 +101,7 @@ export type ActionRow = BaseComponent & {
 		| RoleSelect
 		| MentionableSelect
 		| ChannelSelect
-		| InputText
+		| TextInput
 	>;
 };
 
@@ -118,6 +120,7 @@ export type SelectMenu<T extends SelectComponentType> = BaseComponent & {
 	min_values?: number;
 	max_values?: number;
 	disabled?: boolean;
+	required?: boolean;
 };
 
 /**
@@ -164,30 +167,40 @@ export type ChannelSelect = SelectMenu<MessageComponentTypes.CHANNEL_SELECT> & {
 };
 
 export enum ChannelTypes {
-	DM = 1,
-	GROUP_DM = 3,
 	GUILD_TEXT = 0,
+	DM = 1,
 	GUILD_VOICE = 2,
+	GROUP_DM = 3,
 	GUILD_CATEGORY = 4,
 	GUILD_ANNOUNCEMENT = 5,
 	GUILD_STORE = 6,
+	ANNOUNCEMENT_THREAD = 10,
+	PUBLIC_THREAD = 11,
+	PRIVATE_THREAD = 12,
+	GUILD_STAGE_VOICE = 13,
+	GUILD_DIRECTORY = 14,
+	GUILD_FORUM = 15,
+	GUILD_MEDIA = 16,
 }
 
 /**
  * Text input component
  * @see {@link https://discord.com/developers/docs/components/reference#text-input}
  */
-export type InputText = {
+export type TextInput = {
 	type: MessageComponentTypes.INPUT_TEXT;
 	custom_id: string;
 	style: TextStyleTypes.SHORT | TextStyleTypes.PARAGRAPH;
-	label: string;
+	label?: string;
 	min_length?: number;
 	max_length?: number;
 	required?: boolean;
 	value?: string;
 	placeholder?: string;
 };
+
+/** @deprecated `InputText` has been renamed to `TextInput` */
+export type InputText = TextInput;
 
 export enum TextStyleTypes {
 	SHORT = 1,
@@ -286,6 +299,17 @@ export interface Container extends BaseComponent {
 	components: Array<MessageComponent>;
 	accent_color?: number | null;
 	spoiler?: boolean;
+}
+
+/**
+ * Label component
+ * @see {@link https://discord.com/developers/docs/components/reference#label}
+ */
+export interface Label extends BaseComponent {
+	type: MessageComponentTypes.LABEL;
+	label: string;
+	description?: string;
+	component: StringSelect | TextInput;
 }
 
 export interface UnfurledMediaItem {
