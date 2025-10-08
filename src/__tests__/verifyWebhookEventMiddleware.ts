@@ -245,7 +245,7 @@ describe('verify webhook event middleware', () => {
 			'',
 		);
 		expect(exampleRequestResponse.status).toBe(204);
-		expect(warnSpy).toBeCalled();
+		expect(warnSpy).toHaveBeenCalled();
 	});
 
 	it('handles route handler attempting to modify already-sent response', async () => {
