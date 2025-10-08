@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.1](https://github.com/discord/discord-interactions-js/compare/v4.4.0...v4.4.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* trigger a release ([#107](https://github.com/discord/discord-interactions-js/issues/107)) ([73c4a11](https://github.com/discord/discord-interactions-js/commit/73c4a11d449801b3eb22330e76cfa358f16ab58e))
+
 ## [4.4.0](https://github.com/discord/discord-interactions-js/compare/4.3.0...v4.4.0) (2025-10-08)
 
 
