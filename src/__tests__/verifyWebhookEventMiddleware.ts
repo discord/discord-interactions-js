@@ -1,16 +1,15 @@
 import type * as http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { Request, Response } from 'express';
+import express from 'express';
 import { verifyWebhookEventMiddleware } from '../index';
+import { subtleCrypto } from '../util';
 import { WebhookEventType, WebhookType } from '../webhooks';
 import {
 	generateKeyPair,
 	sendExampleRequest,
 	signRequestWithKeyPair,
 } from './utils/SharedTestUtils';
-
-import express from 'express';
-import { subtleCrypto } from '../util';
 
 const expressApp = express();
 
@@ -63,7 +62,7 @@ describe('verify webhook event middleware', () => {
 				next();
 			},
 			verifyWebhookEventMiddleware(rawPublicKey),
-			(req: Request, res: Response) => {
+			(_req: Request, res: Response) => {
 				// This handler will be reached but the response has already been sent
 				// by the middleware with 204 status
 				if (!res.headersSent) {
@@ -183,9 +182,7 @@ describe('verify webhook event middleware', () => {
 			exampleWebhookUrl,
 			{
 				'x-signature-ed25519': signedRequest.signature,
-				'x-signature-timestamp': String(
-					Math.round(new Date().getTime() / 1000) - 10000,
-				),
+				'x-signature-timestamp': String(Math.round(Date.now() / 1000) - 10000),
 				'content-type': 'application/json',
 			},
 			signedRequest.body,
@@ -266,7 +263,7 @@ describe('verify webhook event middleware', () => {
 		testApp.post(
 			'/webhook-test',
 			verifyWebhookEventMiddleware(rawPublicKey),
-			(req: Request, res: Response) => {
+			(_req: Request, res: Response) => {
 				// This handler tries to send a response after middleware already sent one
 				try {
 					res.json({ shouldFail: true });

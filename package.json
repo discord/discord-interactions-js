@@ -34,7 +34,7 @@
     "discord-interactions": "^4.3.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.7.3",
+    "@biomejs/biome": "^2.2.5",
     "@types/express": "^4.17.9",
     "@types/jest": "^29.0.0",
     "@types/node": "^22.0.0",

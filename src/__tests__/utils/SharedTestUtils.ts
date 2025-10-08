@@ -77,7 +77,7 @@ export async function signRequestWithKeyPair(
 	body: string,
 	privateKey: CryptoKey,
 ) {
-	const timestamp = String(Math.round(new Date().getTime() / 1000));
+	const timestamp = String(Math.round(Date.now() / 1000));
 	const signature = await subtleCrypto.sign(
 		{
 			name: 'ed25519',

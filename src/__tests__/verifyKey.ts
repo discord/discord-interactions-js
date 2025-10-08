@@ -128,7 +128,7 @@ describe('verify key method', () => {
 		const isValid = await verifyKey(
 			signedRequest.body,
 			signedRequest.signature,
-			String(Math.round(new Date().getTime() / 1000) - 10000),
+			String(Math.round(Date.now() / 1000) - 10000),
 			validKeyPair.publicKey,
 		);
 		expect(isValid).toBe(false);
