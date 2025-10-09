@@ -3,6 +3,8 @@ on:
     branches:
       - main
   pull_request:
+  pull_request_target:
+  workflow_dispatch:
 name: ci
 env:
   NODE: 22
