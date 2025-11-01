@@ -82,6 +82,16 @@ export enum InteractionResponseFlags {
 	EPHEMERAL = 1 << 6,
 
 	/**
+	 * Send the message in silent mode so it avoid sending notifications to users
+	 */
+	SUPPRESS_NOTIFICATIONS = 1 << 12,
+
+	/**
+	 * Removes all attached embeds to the message
+	 */
+	SUPPRESS_EMBEDS = 1 << 2,
+
+	/**
 	 * Allows you to create fully component-driven messages
 	 * @see {@link https://discord.com/developers/docs/components/reference}
 	 */
