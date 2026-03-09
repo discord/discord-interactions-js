@@ -50,6 +50,28 @@ export const autocompleteRequestBody = JSON.stringify({
 		],
 	},
 });
+// Example MODAL_SUBMIT request body
+export const modalSubmitRequestBody = JSON.stringify({
+	id: '787053080478613557',
+	token: 'ThisIsATokenFromDiscordThatIsVeryLong',
+	type: 5,
+	version: 1,
+	data: {
+		custom_id: 'test_modal',
+		components: [
+			{
+				type: 1,
+				components: [
+					{
+						type: 4,
+						custom_id: 'test_input',
+						value: 'Hello World',
+					},
+				],
+			},
+		],
+	},
+});
 
 export async function generateKeyPair() {
 	const keyPair = await subtleCrypto.generateKey(

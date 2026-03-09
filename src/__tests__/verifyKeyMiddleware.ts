@@ -14,6 +14,7 @@ import {
 	autocompleteRequestBody,
 	generateKeyPair,
 	messageComponentRequestBody,
+	modalSubmitRequestBody,
 	pingRequestBody,
 	sendExampleRequest,
 	signRequestWithKeyPair,
@@ -45,6 +46,14 @@ const exampleAutocompleteResponse = {
 				value: 'first_option',
 			},
 		],
+	},
+};
+
+const exampleModalSubmitResponse = {
+	type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+	data: {
+		content: 'Modal submitted successfully.',
+		flags: InteractionResponseFlags.EPHEMERAL,
 	},
 };
 
@@ -87,6 +96,8 @@ describe('verify key middleware', () => {
 					interaction.type === InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE
 				) {
 					res.send(exampleAutocompleteResponse);
+				} else if (interaction.type === InteractionType.MODAL_SUBMIT) {
+					res.send(exampleModalSubmitResponse);
 				}
 			},
 		);
@@ -178,6 +189,27 @@ describe('verify key middleware', () => {
 		const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
 		expect(exampleRequestResponseBody).toStrictEqual(
 			exampleAutocompleteResponse,
+		);
+	});
+
+	it('valid modal submit', async () => {
+		// Sign and verify a valid modal submit request
+		const signedRequest = await signRequestWithKeyPair(
+			modalSubmitRequestBody,
+			validKeyPair.privateKey,
+		);
+		const exampleRequestResponse = await sendExampleRequest(
+			exampleInteractionsUrl,
+			{
+				'x-signature-ed25519': signedRequest.signature,
+				'x-signature-timestamp': signedRequest.timestamp,
+				'content-type': 'application/json',
+			},
+			signedRequest.body,
+		);
+		const exampleRequestResponseBody = JSON.parse(exampleRequestResponse.body);
+		expect(exampleRequestResponseBody).toStrictEqual(
+			exampleModalSubmitResponse,
 		);
 	});
 

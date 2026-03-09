@@ -19,6 +19,10 @@ export enum MessageComponentTypes {
 	SEPARATOR = 14,
 	CONTAINER = 17,
 	LABEL = 18,
+	FILE_UPLOAD = 19,
+	RADIO_GROUP = 21,
+	CHECKBOX_GROUP = 22,
+	CHECKBOX = 23,
 }
 
 export type MessageComponent =
@@ -37,7 +41,11 @@ export type MessageComponent =
 	| FileComponent
 	| Separator
 	| Container
-	| Label;
+	| Label
+	| FileUpload
+	| RadioGroup
+	| CheckboxGroup
+	| Checkbox;
 
 export enum ButtonStyleTypes {
 	PRIMARY = 1,
@@ -309,7 +317,7 @@ export interface Label extends BaseComponent {
 	type: MessageComponentTypes.LABEL;
 	label: string;
 	description?: string;
-	component: StringSelect | TextInput;
+	component: StringSelect | TextInput | FileUpload | RadioGroup | CheckboxGroup | Checkbox;
 }
 
 export interface UnfurledMediaItem {
@@ -318,4 +326,69 @@ export interface UnfurledMediaItem {
 	height?: number | null;
 	width?: number | null;
 	content_type?: string;
+}
+
+/**
+ * File upload component
+ * @see {@link https://discord.com/developers/docs/components/reference#file-upload}
+ */
+export interface FileUpload extends BaseComponent {
+	type: MessageComponentTypes.FILE_UPLOAD;
+	custom_id: string;
+	min_values?: number;
+	max_values?: number;
+	required?: boolean;
+}
+
+/**
+ * Radio group component
+ * @see {@link https://discord.com/developers/docs/components/reference#radio-group}
+ */
+export interface RadioGroup extends BaseComponent {
+	type: MessageComponentTypes.RADIO_GROUP;
+	custom_id: string;
+	options: RadioGroupOption[];
+	required?: boolean;
+}
+
+export interface RadioGroupOption {
+	label: string;
+	value: string;
+	description?: string;
+	emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
+	default?: boolean;
+}
+
+/**
+ * Checkbox group component
+ * @see {@link https://discord.com/developers/docs/components/reference#checkbox-group}
+ */
+export interface CheckboxGroup extends BaseComponent {
+	type: MessageComponentTypes.CHECKBOX_GROUP;
+	custom_id: string;
+	options: CheckboxGroupOption[];
+	min_values?: number;
+	max_values?: number;
+	required?: boolean;
+}
+
+export interface CheckboxGroupOption {
+	label: string;
+	value: string;
+	description?: string;
+	emoji?: Pick<EmojiInfo, 'id' | 'name' | 'animated'>;
+	default?: boolean;
+}
+
+/**
+ * Checkbox component
+ * @see {@link https://discord.com/developers/docs/components/reference#checkbox}
+ */
+export interface Checkbox extends BaseComponent {
+	type: MessageComponentTypes.CHECKBOX;
+	custom_id: string;
+	label: string;
+	description?: string;
+	required?: boolean;
+	default?: boolean;
 }
