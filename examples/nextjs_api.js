@@ -9,7 +9,6 @@ const {
 function runMiddleware(req, res, fn) {
 	return new Promise((resolve, reject) => {
 		req.header = (name) => req.headers[name.toLowerCase()];
-		req.body = JSON.stringify(req.body);
 		fn(req, res, (result) => {
 			if (result instanceof Error) return reject(result);
 			return resolve(result);
@@ -34,3 +33,10 @@ export default async function handler(req, res) {
 		});
 	}
 }
+
+// Keep the request stream untouched until verifyKeyMiddleware checks its signature.
+export const config = {
+	api: {
+		bodyParser: false,
+	},
+};
